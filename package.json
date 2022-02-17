@@ -1,6 +1,6 @@
 {
-  "name": "@pankod/refine-strapi",
-  "description": "refine Strapi REST data provider. refine is a React-based headless framework for building data-intensive applications in no time. It ships with Ant Design System, an enterprise-level UI toolkit.",
+  "name": "tspvivek/refine-directus",
+  "description": "refine Directus REST data provider. refine is a React-based headless framework for building data-intensive applications in no time. It ships with Ant Design System, an enterprise-level UI toolkit.",
   "version": "3.2.0",
   "license": "MIT",
   "main": "dist/index.js",
@@ -25,15 +25,15 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
-  "author": "Pankod",
-  "module": "dist/refine-strapi.esm.js",
+  "author": "Vivek Palanisamy",
+  "module": "dist/refine-directus.esm.js",
   "size-limit": [
     {
-      "path": "dist/refine-strapi.cjs.production.min.js",
+      "path": "dist/refine-directus.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/refine-strapi.esm.js",
+      "path": "dist/refine-directus.esm.js",
       "limit": "10 KB"
     }
   ],
@@ -47,7 +47,8 @@
   "dependencies": {
     "@pankod/refine-core": "^3.2.0",
     "axios": "^0.21.4",
-    "query-string": "^7.0.1"
+    "query-string": "^7.0.1",
+    "@directus/sdk": "^9.4.3",
   },
   "gitHead": "829f5a516f98c06f666d6be3e6e6099c75c07719",
   "publishConfig": {
