@@ -1,7 +1,7 @@
 {
   "name": "tspvivek/refine-directus",
   "description": "refine Directus REST data provider. refine is a React-based headless framework for building data-intensive applications in no time. It ships with Ant Design System, an enterprise-level UI toolkit.",
-  "version": "3.2.0",
+  "version": "1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
