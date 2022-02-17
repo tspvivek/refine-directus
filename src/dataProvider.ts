@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { HttpError, CrudFilters, CrudSorting, DataProvider as IDataProvider } from "@pankod/refine-core";
+import { HttpError, CrudFilters, CrudSorting, DataProvider as IDataProvider, DataProvider } from "@pankod/refine-core";
 import { stringify } from "query-string";
-import { Directus, TransportResponse } from "@directus/sdk";
+import { TransportResponse } from "@directus/sdk";
 
 
 const operators = {
@@ -74,9 +74,7 @@ const generateFilter = (filters?: CrudFilters) => {
     return { search: search, filters: queryFilters };
 };
 
-export const DataProvider = (
-    apiUrl: string
-): IDataProvider => ({
+export const dataProvider = (directusClient): DataProvider => ({
     getList: async ({ resource, pagination, filters, sort, metaData }) => {
 
         const current = pagination?.current || 1;
@@ -87,7 +85,7 @@ export const DataProvider = (
 
         const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
 
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             search: paramsFilters.search,
@@ -118,7 +116,7 @@ export const DataProvider = (
     },
 
     getMany: async ({ resource, ids, metaData }) => {
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             filter: {
@@ -145,7 +143,7 @@ export const DataProvider = (
 
     create: async ({ resource, variables, metaData }) => {
 
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
@@ -166,7 +164,7 @@ export const DataProvider = (
     },
 
     update: async ({ resource, id, variables, metaData }) => {
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
@@ -188,7 +186,7 @@ export const DataProvider = (
 
     updateMany: async ({ resource, ids, variables, metaData }) => {
 
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
@@ -210,7 +208,7 @@ export const DataProvider = (
 
     createMany: async ({ resource, variables, metaData }) => {
 
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
@@ -232,7 +230,7 @@ export const DataProvider = (
     },
 
     getOne: async ({ resource, id, metaData }) => {
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         let params: any = {
             ...metaData
@@ -252,7 +250,7 @@ export const DataProvider = (
     },
 
     deleteOne: async ({ resource, id }) => {
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         try {
             const response: any = await directus.deleteOne(id);
@@ -268,7 +266,7 @@ export const DataProvider = (
     },
 
     deleteMany: async ({ resource, ids }) => {
-        const directus = new Directus(apiUrl).items(resource);
+        const directus = directusClient.items(resource);
 
         try {
             const response: any = await directus.deleteMany(ids);
@@ -284,13 +282,12 @@ export const DataProvider = (
     },
 
     getApiUrl: () => {
-        return apiUrl;
+        return directusClient.getUrl();
     },
 
     custom: async ({ url, method, filters, sort, payload, query, headers }) => {
 
-        //const directusCustom = new Directus(apiUrl).transport.get("/items/brand", {params: {}});
-        const directusTransport = new Directus(apiUrl).transport;
+        const directusTransport = directusClient.transport;
 
         let response: TransportResponse<any>;
         switch (method) {

@@ -1,27 +1,23 @@
-import { Directus } from '@directus/sdk';
-
-export const AuthHelper = (apiUrl: string) => {
-	const directus = new Directus(apiUrl);
-
+export const AuthHelper = (directusClient) => {
 	return {
 		login: async (identifier: string, password: string) => {
-			return await directus.auth.login({
+			return await directusClient.auth.login({
 				email: identifier,
 				password: password
 			});
 		},
 		me: async (metaData: {}) => {
-			let me = await directus.users.me.read(metaData);
+			let me = await directusClient.users.me.read(metaData);
 			return me;
 		},
 		setToken: async (token: string) => {
-			await directus.auth.static(token);
+			await directusClient.auth.static(token);
 		},
 		getToken: () => {
-			return directus.auth.token;
+			return directusClient.auth.token;
 		},
 		logout: async () => {
-			return await directus.auth.logout();
+			return await directusClient.auth.logout();
 		}
 	};
 };
