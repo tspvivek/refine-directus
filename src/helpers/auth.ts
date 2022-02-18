@@ -1,4 +1,4 @@
-export const AuthHelper = (directusClient) => {
+export const AuthHelper = (directusClient:any) => {
 	return {
 		login: async (identifier: string, password: string) => {
 			return await directusClient.auth.login({

@@ -1,7 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { HttpError, CrudFilters, CrudSorting, DataProvider as IDataProvider, DataProvider } from "@pankod/refine-core";
-import { stringify } from "query-string";
-import { TransportResponse } from "@directus/sdk";
+import { CrudFilters, CrudSorting, DataProvider } from "@pankod/refine-core";
 
 
 const operators = {
@@ -28,7 +25,7 @@ const strToObj = (str: string, val: any) => {
     var i: number,
         obj = {},
         strarr = str.split('.');
-    var x = obj;
+    var x:any = obj;
     for (i = 0; i < strarr.length - 1; i++) {
         x = x[strarr[i]] = {};
     }
@@ -52,7 +49,7 @@ const generateSort = (sort?: CrudSorting) => {
 
 const generateFilter = (filters?: CrudFilters) => {
     const queryFilters: { [key: string]: any } = {};
-    let search: string;
+    let search: string='';
     if (filters) {
         queryFilters['_and'] = [];
         filters.map(({ field, operator, value }) => {
@@ -74,7 +71,7 @@ const generateFilter = (filters?: CrudFilters) => {
     return { search: search, filters: queryFilters };
 };
 
-export const dataProvider = (directusClient): DataProvider => ({
+export const dataProvider = (directusClient:any): DataProvider => ({
     getList: async ({ resource, pagination, filters, sort, metaData }) => {
 
         const current = pagination?.current || 1;
@@ -289,7 +286,7 @@ export const dataProvider = (directusClient): DataProvider => ({
 
         const directusTransport = directusClient.transport;
 
-        let response: TransportResponse<any>;
+        let response:any;
         switch (method) {
             case "put":
                 response = await directusTransport.put(url, payload, { headers: headers, params: query });
