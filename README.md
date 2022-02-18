@@ -1,5 +1,5 @@
 # refine-directus
-Directus dataprovider package for refine.
+[**Directus**](https://directus.io/) dataprovider package for refine.
 
 ## About
 
