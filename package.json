@@ -5,6 +5,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "repository": "git://github.com/tspvivek/refine-directus.git",
   "private": false,
   "files": [
     "dist",
@@ -46,12 +47,11 @@
   },
   "dependencies": {
     "@pankod/refine-core": "^3.2.0",
-    "axios": "^0.21.4",
-    "query-string": "^7.0.1",
     "@directus/sdk": "^9.4.3"
   },
   "gitHead": "829f5a516f98c06f666d6be3e6e6099c75c07719",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   }
 }
