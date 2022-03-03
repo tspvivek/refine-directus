@@ -1,10 +1,12 @@
-export const AuthHelper = (directusClient:any) => {
+export const AuthHelper = (directusClient: any) => {
 	return {
 		login: async (identifier: string, password: string) => {
-			return await directusClient.auth.login({
+			let response = await directusClient.auth.login({
 				email: identifier,
 				password: password
 			});
+
+			return response;
 		},
 		me: async (metaData: {}) => {
 			let me = await directusClient.users.me.read(metaData);
@@ -13,8 +15,8 @@ export const AuthHelper = (directusClient:any) => {
 		setToken: async (token: string) => {
 			await directusClient.auth.static(token);
 		},
-		getToken: () => {
-			return directusClient.auth.token;
+		getToken: async () => {
+			return await directusClient.auth.token;
 		},
 		logout: async () => {
 			return await directusClient.auth.logout();

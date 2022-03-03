@@ -961,7 +961,7 @@ var dataProvider = function dataProvider(directusClient) {
                 }, metaData);
                 _context.prev = 8;
                 _context.next = 11;
-                return directus.readMany(params);
+                return directus.readByQuery(params);
 
               case 11:
                 response = _context.sent;
@@ -1012,7 +1012,7 @@ var dataProvider = function dataProvider(directusClient) {
                 }, metaData);
                 _context2.prev = 3;
                 _context2.next = 6;
-                return directus.readMany(params);
+                return directus.readByQuery(params);
 
               case 6:
                 response = _context2.sent;
@@ -1058,7 +1058,7 @@ var dataProvider = function dataProvider(directusClient) {
               case 6:
                 response = _context3.sent;
                 return _context3.abrupt("return", {
-                  data: response.data
+                  data: response
                 });
 
               case 10:
@@ -1098,7 +1098,7 @@ var dataProvider = function dataProvider(directusClient) {
               case 6:
                 response = _context4.sent;
                 return _context4.abrupt("return", {
-                  data: response.data
+                  data: response
                 });
 
               case 10:
@@ -1217,9 +1217,9 @@ var dataProvider = function dataProvider(directusClient) {
 
               case 6:
                 response = _context7.sent;
-                return _context7.abrupt("return", {
-                  data: response.data
-                });
+                return _context7.abrupt("return", Promise.resolve({
+                  data: response
+                }));
 
               case 10:
                 _context7.prev = 10;
@@ -1257,7 +1257,7 @@ var dataProvider = function dataProvider(directusClient) {
               case 5:
                 response = _context8.sent;
                 return _context8.abrupt("return", {
-                  data: response.data
+                  data: response
                 });
 
               case 9:
@@ -1416,6 +1416,7 @@ var AuthHelper = function AuthHelper(directusClient) {
   return {
     login: function () {
       var _login = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(identifier, password) {
+        var response;
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -1427,9 +1428,10 @@ var AuthHelper = function AuthHelper(directusClient) {
                 });
 
               case 2:
-                return _context.abrupt("return", _context.sent);
+                response = _context.sent;
+                return _context.abrupt("return", response);
 
-              case 3:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -1494,17 +1496,14 @@ var AuthHelper = function AuthHelper(directusClient) {
 
       return setToken;
     }(),
-    getToken: function getToken() {
-      return directusClient.auth.token;
-    },
-    logout: function () {
-      var _logout = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4() {
+    getToken: function () {
+      var _getToken = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4() {
         return runtime_1.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return directusClient.auth.logout();
+                return directusClient.auth.token;
 
               case 2:
                 return _context4.abrupt("return", _context4.sent);
@@ -1515,6 +1514,32 @@ var AuthHelper = function AuthHelper(directusClient) {
             }
           }
         }, _callee4);
+      }));
+
+      function getToken() {
+        return _getToken.apply(this, arguments);
+      }
+
+      return getToken;
+    }(),
+    logout: function () {
+      var _logout = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee5() {
+        return runtime_1.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.next = 2;
+                return directusClient.auth.logout();
+
+              case 2:
+                return _context5.abrupt("return", _context5.sent);
+
+              case 3:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
       }));
 
       function logout() {

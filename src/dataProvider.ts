@@ -99,7 +99,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
         };
 
         try {
-            const response: any = await directus.readMany(params);
+            const response: any = await directus.readByQuery(params);
 
             return {
                 data: response.data,
@@ -125,7 +125,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
         };
 
         try {
-            const response: any = await directus.readMany(params);
+            const response: any = await directus.readByQuery(params);
 
             return {
                 data: response.data,
@@ -151,7 +151,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
             const response: any = await directus.createOne(params);
 
             return {
-                data: response.data
+                data: response
             };
         }
         catch (e) {
@@ -172,7 +172,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
             const response: any = await directus.updateOne(id, params);
 
             return {
-                data: response.data
+                data: response
             };
         }
         catch (e) {
@@ -236,9 +236,9 @@ export const dataProvider = (directusClient:any): DataProvider => ({
         try {
             const response: any = await directus.readOne(id, params);
 
-            return {
-                data: response.data
-            };
+            return Promise.resolve({
+                data: response
+            });
         }
         catch (e) {
             console.log(e);
@@ -253,7 +253,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
             const response: any = await directus.deleteOne(id);
 
             return {
-                data: response.data
+                data: response
             };
         }
         catch (e) {
