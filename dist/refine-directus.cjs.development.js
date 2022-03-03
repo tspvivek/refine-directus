@@ -1500,14 +1500,17 @@ var AuthHelper = function AuthHelper(directusClient) {
 
       return setToken;
     }(),
-    getToken: function () {
-      var _getToken = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4() {
+    getToken: function getToken() {
+      return directusClient.auth.token;
+    },
+    logout: function () {
+      var _logout = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4() {
         return runtime_1.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return directusClient.auth.token;
+                return directusClient.auth.logout();
 
               case 2:
                 return _context4.abrupt("return", _context4.sent);
@@ -1518,32 +1521,6 @@ var AuthHelper = function AuthHelper(directusClient) {
             }
           }
         }, _callee4);
-      }));
-
-      function getToken() {
-        return _getToken.apply(this, arguments);
-      }
-
-      return getToken;
-    }(),
-    logout: function () {
-      var _logout = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee5() {
-        return runtime_1.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                _context5.next = 2;
-                return directusClient.auth.logout();
-
-              case 2:
-                return _context5.abrupt("return", _context5.sent);
-
-              case 3:
-              case "end":
-                return _context5.stop();
-            }
-          }
-        }, _callee5);
       }));
 
       function logout() {

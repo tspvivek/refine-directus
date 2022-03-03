@@ -15,8 +15,8 @@ export const AuthHelper = (directusClient: any) => {
 		setToken: async (token: string) => {
 			await directusClient.auth.static(token);
 		},
-		getToken: async () => {
-			return await directusClient.auth.token;
+		getToken: () => {
+			return directusClient.auth.token;
 		},
 		logout: async () => {
 			return await directusClient.auth.logout();
