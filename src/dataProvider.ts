@@ -279,7 +279,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
     },
 
     getApiUrl: () => {
-        return directusClient.getUrl();
+        return directusClient.url;
     },
 
     custom: async ({ url, method, filters, sort, payload, query, headers }) => {

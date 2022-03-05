@@ -1320,7 +1320,7 @@ var dataProvider = function dataProvider(directusClient) {
       return deleteMany;
     }(),
     getApiUrl: function getApiUrl() {
-      return directusClient.getUrl();
+      return directusClient.url;
     },
     custom: function () {
       var _custom = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee10(_ref11) {
