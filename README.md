@@ -14,3 +14,10 @@ For more detailed information and usage, refer to the [refine data provider docu
 ```
 npm install @tspvivek/refine-directus
 ```
+
+## Example
+Use below login details in example<br />
+username: demo@demo.com<br />
+password: 123456<br />
+
+
