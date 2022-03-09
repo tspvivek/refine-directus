@@ -1,3 +1,4 @@
+import { useState } from 'react';
 export * from '@directus/sdk';
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -52,44 +53,6 @@ function _extends() {
   };
 
   return _extends.apply(this, arguments);
-}
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-  return arr2;
-}
-
-function _createForOfIteratorHelperLoose(o, allowArrayLike) {
-  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
-  if (it) return (it = it.call(o)).next.bind(it);
-
-  if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-    if (it) o = it;
-    var i = 0;
-    return function () {
-      if (i >= o.length) return {
-        done: true
-      };
-      return {
-        done: false,
-        value: o[i++]
-      };
-    };
-  }
-
-  throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 function createCommonjsModule(fn, module) {
@@ -1528,8 +1491,13 @@ var AuthHelper = function AuthHelper(directusClient) {
   };
 };
 
-var getValueProps = function getValueProps(data, imageUrl) {
+var getValueProps = function getValueProps(valueProps) {
   var _data$fileList;
+
+  var data = valueProps.data,
+      imageUrl = valueProps.imageUrl,
+      getFileUrl = valueProps.getFileUrl,
+      getFileTitle = valueProps.getFileTitle;
 
   if (!data) {
     return {
@@ -1537,54 +1505,148 @@ var getValueProps = function getValueProps(data, imageUrl) {
     };
   }
 
-  return {
+  var files = {
     file: data.file,
-    fileList: (_data$fileList = data.fileList) != null ? _data$fileList : (Array.isArray(data) ? data : [].concat(data)).map(function (item) {
+    fileList: (_data$fileList = data.fileList) != null ? _data$fileList : (Array.isArray(data) ? data : [data]).map(function (item) {
       var file = {
-        name: item.name,
+        name: getFileTitle ? getFileTitle(item) : item.title,
+        url: getFileUrl ? getFileUrl(item) : imageUrl + "assets/" + item.id,
         percent: item.percent,
-        size: item.size,
-        status: item.status,
-        type: item.mime || item.type,
+        size: item.filesize,
+        status: 'done',
+        type: item.type,
         uid: item.id
       };
-
-      if (item.url) {
-        file.url = "" + imageUrl + item.url;
-      }
-
       return file;
     })
   };
+  return files;
 };
-var mediaUploadMapper = function mediaUploadMapper(params) {
-  Object.keys(params).map(function (item) {
+var useDirectusUpload = function useDirectusUpload(mediaConfigList, directusClient) {
+  var _useState = useState([]),
+      uploadedFileIds = _useState[0];
+
+  var _useState2 = useState([]),
+      fileList = _useState2[0],
+      setFileList = _useState2[1];
+
+  var _beforeUpload = function beforeUpload(_file, files, maxCount) {
+    var totalFiles = fileList.length;
+    var filesCount = files.length;
+
+    if (totalFiles + filesCount > maxCount) {
+      var excessFileCount = totalFiles + filesCount - maxCount; // convert negative
+
+      var deleteItemCount = excessFileCount - excessFileCount * 2;
+      files.splice(deleteItemCount);
+    } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+
+
+    setFileList([].concat(fileList, files));
+    return true;
+  };
+
+  var customRequest = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref) {
+      var file, onError, onSuccess, form, data;
+      return runtime_1.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              file = _ref.file, onError = _ref.onError, onSuccess = _ref.onSuccess;
+              _context.prev = 1;
+              form = new FormData();
+              form.append("file", file);
+              _context.next = 6;
+              return directusClient.files.createOne(form);
+
+            case 6:
+              data = _context.sent;
+              onSuccess == null ? void 0 : onSuccess({
+                data: data
+              }, new XMLHttpRequest());
+              _context.next = 13;
+              break;
+
+            case 10:
+              _context.prev = 10;
+              _context.t0 = _context["catch"](1);
+              onError == null ? void 0 : onError(new Error("Upload Error"));
+
+            case 13:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, null, [[1, 10]]);
+    }));
+
+    return function customRequest(_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  var getUploadProps = function getUploadProps(fieldName) {
+    var mediaConfig = mediaConfigList.filter(function (config) {
+      return config.name === fieldName;
+    })[0];
+    return {
+      uploadedFileIds: uploadedFileIds,
+      beforeUpload: function beforeUpload(_file, files) {
+        return _beforeUpload(_file, files, mediaConfig.maxCount);
+      },
+      fileList: fileList,
+      maxCount: mediaConfig.maxCount,
+      customRequest: customRequest
+    };
+  };
+
+  return getUploadProps;
+};
+var mediaUploadMapper = function mediaUploadMapper(params, mediaConfigList) {
+  var _loop = function _loop() {
+    var item = _Object$keys[_i];
+
     if (params[item]) {
       var param = params[item].fileList;
       var isMediaField = Array.isArray(param);
 
       if (isMediaField) {
+        var mediaConfig = mediaConfigList.filter(function (config) {
+          return config.name === item;
+        })[0];
         var ids = [];
 
-        for (var _iterator = _createForOfIteratorHelperLoose(param), _step; !(_step = _iterator()).done;) {
-          var _item = _step.value;
+        for (var _i2 = 0, _Object$keys2 = Object.keys(param); _i2 < _Object$keys2.length; _i2++) {
+          var key = _Object$keys2[_i2];
 
-          if (_item.response) {
-            for (var _iterator2 = _createForOfIteratorHelperLoose(_item.response), _step2; !(_step2 = _iterator2()).done;) {
-              var response = _step2.value;
-              ids.push(response.id);
+          if (param[key].response) {
+            if (mediaConfig.normalize) {
+              ids.push(mediaConfig.normalize(param[key].response.data.id));
+            } else {
+              ids.push(param[key].response.data.id);
             }
           } else {
-            ids.push(_item.uid);
+            ids.push(param[key].uid);
           }
         }
 
-        params[item] = ids;
+        if (mediaConfig.multiple) {
+          params[item] = ids;
+        } else {
+          params[item] = ids[0];
+        }
       }
     }
-  });
+  };
+
+  for (var _i = 0, _Object$keys = Object.keys(params); _i < _Object$keys.length; _i++) {
+    _loop();
+  }
+
   return params;
 };
 
-export { AuthHelper, dataProvider, getValueProps, mediaUploadMapper };
+export { AuthHelper, dataProvider, getValueProps, mediaUploadMapper, useDirectusUpload };
 //# sourceMappingURL=refine-directus.esm.js.map
