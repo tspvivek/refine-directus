@@ -25,7 +25,7 @@ const strToObj = (str: string, val: any) => {
     var i: number,
         obj = {},
         strarr = str.split('.');
-    var x:any = obj;
+    var x: any = obj;
     for (i = 0; i < strarr.length - 1; i++) {
         x = x[strarr[i]] = {};
     }
@@ -49,12 +49,12 @@ const generateSort = (sort?: CrudSorting) => {
 
 const generateFilter = (filters?: CrudFilters) => {
     const queryFilters: { [key: string]: any } = {};
-    let search: string='';
+    let search: string = '';
     if (filters) {
         queryFilters['_and'] = [];
         filters.map((filter) => {
             if (filter.operator !== "or") {
-                const {field, operator, value} = filter;
+                const { field, operator, value } = filter;
 
                 if (value) {
                     if (field === "search") {
@@ -77,7 +77,7 @@ const generateFilter = (filters?: CrudFilters) => {
     return { search: search, filters: queryFilters };
 };
 
-export const dataProvider = (directusClient:any): DataProvider => ({
+export const dataProvider = (directusClient: any): DataProvider => ({
     getList: async ({ resource, pagination, filters, sort, metaData }) => {
 
         const current = pagination?.current || 1;
@@ -252,15 +252,24 @@ export const dataProvider = (directusClient:any): DataProvider => ({
         }
     },
 
-    deleteOne: async ({ resource, id }) => {
+    deleteOne: async ({ resource, id, metaData }) => {
         const directus = directusClient.items(resource);
 
         try {
-            const response: any = await directus.deleteOne(id);
+            if (metaData && metaData.type === 'archive') {
+                const response: any = await directus.updateOne(id, { status: 'archived' });
 
-            return {
-                data: response
-            };
+                return {
+                    data: response
+                };
+            }
+            else {
+                const response: any = await directus.deleteOne(id);
+
+                return {
+                    data: response
+                };
+            }
         }
         catch (e) {
             console.log(e);
@@ -268,21 +277,31 @@ export const dataProvider = (directusClient:any): DataProvider => ({
         }
     },
 
-    deleteMany: async ({ resource, ids }) => {
+    deleteMany: async ({ resource, ids, metaData }) => {
         const directus = directusClient.items(resource);
 
         try {
-            const response: any = await directus.deleteMany(ids);
+            if (metaData && metaData.type === 'archive') {
+                const response: any = await directus.updateMany(ids, { status: 'archived' });
 
-            return {
-                data: response.data
-            };
+                return {
+                    data: response
+                };
+            }
+            else {
+                const response: any = await directus.deleteMany(ids);
+
+                return {
+                    data: response.data
+                };
+            }
         }
         catch (e) {
             console.log(e);
             throw new Error(e.errors && e.errors[0] && e.errors[0].message);
         }
     },
+
 
     getApiUrl: () => {
         return directusClient.url;
@@ -292,7 +311,7 @@ export const dataProvider = (directusClient:any): DataProvider => ({
 
         const directusTransport = directusClient.transport;
 
-        let response:any;
+        let response: any;
         switch (method) {
             case "put":
                 response = await directusTransport.put(url, payload, { headers: headers, params: query });
