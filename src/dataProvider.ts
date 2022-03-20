@@ -52,18 +52,24 @@ const generateFilter = (filters?: CrudFilters) => {
     let search: string='';
     if (filters) {
         queryFilters['_and'] = [];
-        filters.map(({ field, operator, value }) => {
-            if (value) {
-                if (field === "search") {
-                    search = value;
-                }
-                else {
-                    const directusOperator = operators[operator];
-                    let queryField = `${field}.${directusOperator}`;
-                    let filterObj = strToObj(queryField, value);
+        filters.map((filter) => {
+            if (filter.operator !== "or") {
+                const {field, operator, value} = filter;
 
-                    queryFilters['_and'].push(filterObj);
+                if (value) {
+                    if (field === "search") {
+                        search = value;
+                    }
+                    else {
+                        const directusOperator = operators[operator];
+                        let queryField = `${field}.${directusOperator}`;
+                        let filterObj = strToObj(queryField, value);
+
+                        queryFilters['_and'].push(filterObj);
+                    }
                 }
+            } else {
+                // TODO: implement "or" operator filters for directus
             }
         });
     }
