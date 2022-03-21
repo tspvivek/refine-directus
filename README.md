@@ -22,5 +22,5 @@ password: 123456<br />
 url: https://refine.dev/docs/examples/data-provider/directus/
 
 ## Notes
-To enable perform archive instead of delete with [**DeleteButton**](https://refine.dev/docs/ui-frameworks/antd/components/buttons/delete-button/#api-reference) pass metaData={type:'archive'} in DeleteButton
+To enable perform archive instead of delete with [**DeleteButton**](https://refine.dev/docs/ui-frameworks/antd/components/buttons/delete-button/#api-reference) pass metaData={deleteType:'archive'} in DeleteButton
 

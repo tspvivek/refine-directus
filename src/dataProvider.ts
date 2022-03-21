@@ -256,8 +256,14 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const directus = directusClient.items(resource);
 
         try {
-            if (metaData && metaData.type === 'archive') {
-                const response: any = await directus.updateOne(id, { status: 'archived' });
+            if (metaData && metaData.deleteType === 'archive') {
+
+                let params: any = {
+                    status: 'archived',
+                    ...metaData
+                };
+
+                const response: any = await directus.updateOne(id, params);
 
                 return {
                     data: response
@@ -281,8 +287,12 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const directus = directusClient.items(resource);
 
         try {
-            if (metaData && metaData.type === 'archive') {
-                const response: any = await directus.updateMany(ids, { status: 'archived' });
+            if (metaData && metaData.deleteType === 'archive') {
+                let params: any = {
+                    status: 'archived',
+                    ...metaData
+                };
+                const response: any = await directus.updateMany(ids, params);
 
                 return {
                     data: response

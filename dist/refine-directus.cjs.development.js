@@ -1212,7 +1212,7 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteOne: function () {
       var _deleteOne = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee8(_ref8) {
-        var resource, id, metaData, directus, response, _response;
+        var resource, id, metaData, directus, params, response, _response;
 
         return runtime_1.wrap(function _callee8$(_context8) {
           while (1) {
@@ -1222,48 +1222,49 @@ var dataProvider = function dataProvider(directusClient) {
                 directus = directusClient.items(resource);
                 _context8.prev = 2;
 
-                if (!(metaData && metaData.type === 'archive')) {
-                  _context8.next = 10;
+                if (!(metaData && metaData.deleteType === 'archive')) {
+                  _context8.next = 11;
                   break;
                 }
 
-                _context8.next = 6;
-                return directus.updateOne(id, {
+                params = _extends({
                   status: 'archived'
-                });
+                }, metaData);
+                _context8.next = 7;
+                return directus.updateOne(id, params);
 
-              case 6:
+              case 7:
                 response = _context8.sent;
                 return _context8.abrupt("return", {
                   data: response
                 });
 
-              case 10:
-                _context8.next = 12;
+              case 11:
+                _context8.next = 13;
                 return directus.deleteOne(id);
 
-              case 12:
+              case 13:
                 _response = _context8.sent;
                 return _context8.abrupt("return", {
                   data: _response
                 });
 
-              case 14:
-                _context8.next = 20;
+              case 15:
+                _context8.next = 21;
                 break;
 
-              case 16:
-                _context8.prev = 16;
+              case 17:
+                _context8.prev = 17;
                 _context8.t0 = _context8["catch"](2);
                 console.log(_context8.t0);
                 throw new Error(_context8.t0.errors && _context8.t0.errors[0] && _context8.t0.errors[0].message);
 
-              case 20:
+              case 21:
               case "end":
                 return _context8.stop();
             }
           }
-        }, _callee8, null, [[2, 16]]);
+        }, _callee8, null, [[2, 17]]);
       }));
 
       function deleteOne(_x8) {
@@ -1274,7 +1275,7 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteMany: function () {
       var _deleteMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee9(_ref9) {
-        var resource, ids, metaData, directus, response, _response2;
+        var resource, ids, metaData, directus, params, response, _response2;
 
         return runtime_1.wrap(function _callee9$(_context9) {
           while (1) {
@@ -1284,48 +1285,49 @@ var dataProvider = function dataProvider(directusClient) {
                 directus = directusClient.items(resource);
                 _context9.prev = 2;
 
-                if (!(metaData && metaData.type === 'archive')) {
-                  _context9.next = 10;
+                if (!(metaData && metaData.deleteType === 'archive')) {
+                  _context9.next = 11;
                   break;
                 }
 
-                _context9.next = 6;
-                return directus.updateMany(ids, {
+                params = _extends({
                   status: 'archived'
-                });
+                }, metaData);
+                _context9.next = 7;
+                return directus.updateMany(ids, params);
 
-              case 6:
+              case 7:
                 response = _context9.sent;
                 return _context9.abrupt("return", {
                   data: response
                 });
 
-              case 10:
-                _context9.next = 12;
+              case 11:
+                _context9.next = 13;
                 return directus.deleteMany(ids);
 
-              case 12:
+              case 13:
                 _response2 = _context9.sent;
                 return _context9.abrupt("return", {
                   data: _response2.data
                 });
 
-              case 14:
-                _context9.next = 20;
+              case 15:
+                _context9.next = 21;
                 break;
 
-              case 16:
-                _context9.prev = 16;
+              case 17:
+                _context9.prev = 17;
                 _context9.t0 = _context9["catch"](2);
                 console.log(_context9.t0);
                 throw new Error(_context9.t0.errors && _context9.t0.errors[0] && _context9.t0.errors[0].message);
 
-              case 20:
+              case 21:
               case "end":
                 return _context9.stop();
             }
           }
-        }, _callee9, null, [[2, 16]]);
+        }, _callee9, null, [[2, 17]]);
       }));
 
       function deleteMany(_x9) {
