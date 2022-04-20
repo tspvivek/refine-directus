@@ -70,6 +70,17 @@ const generateFilter = (filters?: CrudFilters) => {
                 }
             } else {
                 // TODO: implement "or" operator filters for directus
+                const { value } = filter;
+                const orFilters: { [key: string]: any } = {};
+                orFilters['_or'] = [];
+                value.map((item) => {
+                    const { field, operator, value } = item;
+                    const directusOperator = operators[operator];
+                    let queryField = `${field}.${directusOperator}`;
+                    let filterObj = strToObj(queryField, value);
+                    orFilters['_or'].push(filterObj);
+                });
+                queryFilters['_and'].push(orFilters);
             }
         });
     }
@@ -86,7 +97,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const _sort = generateSort(sort);
         const paramsFilters = generateFilter(filters);
 
-        const sortString: any = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
 
         const directus = directusClient.items(resource);
 
@@ -99,10 +109,23 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             meta: '*',
             page: current,
             limit: pageSize,
-            sort: sortString,
             fields: ['*'],
             ...metaData
         };
+
+        let sortString: any = null;
+        if (sort) {
+            if (sort.length > 0) {
+                sortString = _sort.join(',');
+            }
+        }
+        else {
+            sortString = '-date_created';
+        }
+
+        if (sortString) {
+            params["sort"] = sortString;
+        }
 
         try {
             const response: any = await directus.readByQuery(params);

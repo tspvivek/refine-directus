@@ -888,6 +888,23 @@ var generateFilter = function generateFilter(filters) {
             queryFilters['_and'].push(filterObj);
           }
         }
+      } else {
+        // TODO: implement "or" operator filters for directus
+        var _value = filter.value;
+        var orFilters = {};
+        orFilters['_or'] = [];
+
+        _value.map(function (item) {
+          var field = item.field,
+              operator = item.operator,
+              value = item.value;
+          var directusOperator = operators[operator];
+          var queryField = field + "." + directusOperator;
+          var filterObj = strToObj(queryField, value);
+          orFilters['_or'].push(filterObj);
+        });
+
+        queryFilters['_and'].push(orFilters);
       }
     });
   }
@@ -902,7 +919,7 @@ var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref) {
-        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, sortString, directus, params, response;
+        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, directus, params, sortString, response;
 
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
@@ -913,7 +930,6 @@ var dataProvider = function dataProvider(directusClient) {
                 pageSize = (pagination == null ? void 0 : pagination.pageSize) || 50;
                 _sort = generateSort(sort);
                 paramsFilters = generateFilter(filters);
-                sortString = sort && sort.length > 0 ? _sort.join(",") : '-date_created';
                 directus = directusClient.items(resource);
                 params = _extends({
                   search: paramsFilters.search,
@@ -925,32 +941,45 @@ var dataProvider = function dataProvider(directusClient) {
                   meta: '*',
                   page: current,
                   limit: pageSize,
-                  sort: sortString,
                   fields: ['*']
                 }, metaData);
-                _context.prev = 8;
-                _context.next = 11;
+                sortString = null;
+
+                if (sort) {
+                  if (sort.length > 0) {
+                    sortString = _sort.join(',');
+                  }
+                } else {
+                  sortString = '-date_created';
+                }
+
+                if (sortString) {
+                  params["sort"] = sortString;
+                }
+
+                _context.prev = 10;
+                _context.next = 13;
                 return directus.readByQuery(params);
 
-              case 11:
+              case 13:
                 response = _context.sent;
                 return _context.abrupt("return", {
                   data: response.data,
                   total: response.meta.filter_count
                 });
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](8);
+              case 17:
+                _context.prev = 17;
+                _context.t0 = _context["catch"](10);
                 console.log(_context.t0);
                 throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
 
-              case 19:
+              case 21:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[8, 15]]);
+        }, _callee, null, [[10, 17]]);
       }));
 
       function getList(_x) {
