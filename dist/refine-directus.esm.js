@@ -837,7 +837,7 @@ var operators = {
 var strToObj = function strToObj(str, val) {
   var i,
       obj = {},
-      strarr = str.split('.');
+      strarr = str.split(".");
   var x = obj;
 
   for (i = 0; i < strarr.length - 1; i++) {
@@ -864,10 +864,10 @@ var generateSort = function generateSort(sort) {
 
 var generateFilter = function generateFilter(filters) {
   var queryFilters = {};
-  var search = '';
+  var search = "";
 
   if (filters) {
-    queryFilters['_and'] = [];
+    queryFilters["_and"] = [];
     filters.map(function (filter) {
       if (filter.operator !== "or") {
         var field = filter.field,
@@ -881,14 +881,14 @@ var generateFilter = function generateFilter(filters) {
             var directusOperator = operators[operator];
             var queryField = field + "." + directusOperator;
             var filterObj = strToObj(queryField, value);
-            queryFilters['_and'].push(filterObj);
+            queryFilters["_and"].push(filterObj);
           }
         }
       } else {
         // TODO: implement "or" operator filters for directus
         var _value = filter.value;
         var orFilters = {};
-        orFilters['_or'] = [];
+        orFilters["_or"] = [];
 
         _value.map(function (item) {
           var field = item.field,
@@ -897,10 +897,10 @@ var generateFilter = function generateFilter(filters) {
           var directusOperator = operators[operator];
           var queryField = field + "." + directusOperator;
           var filterObj = strToObj(queryField, value);
-          orFilters['_or'].push(filterObj);
+          orFilters["_or"].push(filterObj);
         });
 
-        queryFilters['_and'].push(orFilters);
+        queryFilters["_and"].push(orFilters);
       }
     });
   }
@@ -915,7 +915,7 @@ var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref) {
-        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, directus, params, sortString, response;
+        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, directus, status, search, params, sortString, response;
 
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
@@ -927,55 +927,66 @@ var dataProvider = function dataProvider(directusClient) {
                 _sort = generateSort(sort);
                 paramsFilters = generateFilter(filters);
                 directus = directusClient.items(resource);
-                params = _extends({
-                  search: paramsFilters.search,
-                  filter: _extends({}, paramsFilters.filters, {
-                    status: {
-                      _neq: 'archived'
-                    }
-                  }),
-                  meta: '*',
+                status = {
+                  _neq: "archived"
+                };
+
+                if ((metaData == null ? void 0 : metaData.archived) === true) {
+                  status = {};
+                }
+
+                search = {};
+
+                if (paramsFilters.search) {
+                  search = {
+                    search: paramsFilters.search
+                  };
+                }
+
+                params = _extends({}, search, {
+                  filter: _extends({}, paramsFilters.filters, status),
+                  meta: "*",
                   page: current,
                   limit: pageSize,
-                  fields: ['*']
+                  fields: ["*"]
                 }, metaData);
                 sortString = null;
 
                 if (sort) {
                   if (sort.length > 0) {
-                    sortString = _sort.join(',');
+                    sortString = _sort.join(",");
                   }
                 } else {
-                  sortString = '-date_created';
+                  sortString = "-date_created";
                 }
 
                 if (sortString) {
                   params["sort"] = sortString;
                 }
 
-                _context.prev = 10;
-                _context.next = 13;
+                _context.prev = 14;
+                _context.next = 17;
                 return directus.readByQuery(params);
 
-              case 13:
+              case 17:
                 response = _context.sent;
                 return _context.abrupt("return", {
                   data: response.data,
                   total: response.meta.filter_count
                 });
 
-              case 17:
-                _context.prev = 17;
-                _context.t0 = _context["catch"](10);
+              case 21:
+                _context.prev = 21;
+                _context.t0 = _context["catch"](14);
                 console.log(_context.t0);
                 throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
 
-              case 21:
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[10, 17]]);
+        }, _callee, null, [[14, 21]]);
       }));
 
       function getList(_x) {
@@ -997,12 +1008,9 @@ var dataProvider = function dataProvider(directusClient) {
                   filter: {
                     id: {
                       _in: ids
-                    },
-                    status: {
-                      _neq: 'archived'
                     }
                   },
-                  fields: ['*']
+                  fields: ["*"]
                 }, metaData);
                 _context2.prev = 3;
                 _context2.next = 6;
@@ -1247,13 +1255,13 @@ var dataProvider = function dataProvider(directusClient) {
                 directus = directusClient.items(resource);
                 _context8.prev = 2;
 
-                if (!(metaData && metaData.deleteType === 'archive')) {
+                if (!(metaData && metaData.deleteType === "archive")) {
                   _context8.next = 11;
                   break;
                 }
 
                 params = _extends({
-                  status: 'archived'
+                  status: "archived"
                 }, metaData);
                 _context8.next = 7;
                 return directus.updateOne(id, params);
@@ -1310,13 +1318,13 @@ var dataProvider = function dataProvider(directusClient) {
                 directus = directusClient.items(resource);
                 _context9.prev = 2;
 
-                if (!(metaData && metaData.deleteType === 'archive')) {
+                if (!(metaData && metaData.deleteType === "archive")) {
                   _context9.next = 11;
                   break;
                 }
 
                 params = _extends({
-                  status: 'archived'
+                  status: "archived"
                 }, metaData);
                 _context9.next = 7;
                 return directus.updateMany(ids, params);
