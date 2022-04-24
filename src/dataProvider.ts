@@ -97,7 +97,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         const directus = directusClient.items(resource);
 
-        let status: any = { _neq: "archived" };
+        let status: any = { status: { _neq: 'archived' } };
 
         if (metaData?.archived === true) {
             status = {};

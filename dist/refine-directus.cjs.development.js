@@ -932,7 +932,9 @@ var dataProvider = function dataProvider(directusClient) {
                 paramsFilters = generateFilter(filters);
                 directus = directusClient.items(resource);
                 status = {
-                  _neq: "archived"
+                  status: {
+                    _neq: 'archived'
+                  }
                 };
 
                 if ((metaData == null ? void 0 : metaData.archived) === true) {
