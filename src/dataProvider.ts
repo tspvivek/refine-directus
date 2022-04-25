@@ -124,8 +124,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         let sortString: any = null;
         if (sort && sort.length > 0) {
             sortString = _sort.join(",");
-        } else {
-            sortString = "-date_created";
         }
 
         if (sortString) {
