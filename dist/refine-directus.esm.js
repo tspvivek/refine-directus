@@ -954,10 +954,8 @@ var dataProvider = function dataProvider(directusClient) {
                 }, metaData);
                 sortString = null;
 
-                if (sort) {
-                  if (sort.length > 0) {
-                    sortString = _sort.join(",");
-                  }
+                if (sort && sort.length > 0) {
+                  sortString = _sort.join(",");
                 } else {
                   sortString = "-date_created";
                 }
