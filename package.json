@@ -1,57 +1,57 @@
 {
-  "name": "@tspvivek/refine-directus",
-  "description": "Refine Directus REST data provider. This is a wrapper around the Directus SDK to use in refine.",
-  "version": "1.0.17",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "repository": "git://github.com/tspvivek/refine-directus.git",
-  "private": false,
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "start": "tsdx watch --tsconfig tsconfig.json --verbose --noClean",
-    "build": "tsdx build --tsconfig tsconfig.json",
-    "test": "tsdx test --passWithNoTests --runInBand",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
-  },
-  "peerDependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
-  },
-  "author": "Vivek Palanisamy",
-  "module": "dist/refine-directus.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/refine-directus.cjs.production.min.js",
-      "limit": "10 KB"
+    "name": "@tspvivek/refine-directus",
+    "description": "Refine Directus REST data provider. This is a wrapper around the Directus SDK to use in refine.",
+    "version": "1.0.18",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "repository": "git://github.com/tspvivek/refine-directus.git",
+    "private": false,
+    "files": [
+        "dist",
+        "src"
+    ],
+    "engines": {
+        "node": ">=10"
     },
-    {
-      "path": "dist/refine-directus.esm.js",
-      "limit": "10 KB"
+    "scripts": {
+        "start": "tsdx watch --tsconfig tsconfig.json --verbose --noClean",
+        "build": "tsdx build --tsconfig tsconfig.json",
+        "test": "tsdx test --passWithNoTests --runInBand",
+        "prepare": "tsdx build",
+        "size": "size-limit",
+        "analyze": "size-limit --why"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
+    "author": "Vivek Palanisamy",
+    "module": "dist/refine-directus.esm.js",
+    "size-limit": [
+        {
+            "path": "dist/refine-directus.cjs.production.min.js",
+            "limit": "10 KB"
+        },
+        {
+            "path": "dist/refine-directus.esm.js",
+            "limit": "10 KB"
+        }
+    ],
+    "devDependencies": {
+        "@size-limit/preset-small-lib": "^5.0.5",
+        "nock": "^13.1.3",
+        "size-limit": "^5.0.5",
+        "tsdx": "^0.14.1",
+        "tslib": "^2.3.1"
+    },
+    "dependencies": {
+        "@directus/sdk": "^10.3.1",
+        "@pankod/refine-core": "^3.99.4",
+        "@types/react": "^18.0.0"
+    },
+    "gitHead": "829f5a516f98c06f666d6be3e6e6099c75c07719",
+    "publishConfig": {
+        "access": "public"
     }
-  ],
-  "devDependencies": {
-    "@size-limit/preset-small-lib": "^5.0.5",
-    "nock": "^13.1.3",
-    "size-limit": "^5.0.5",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.3.1"
-  },
-  "dependencies": {
-    "@directus/sdk": "^10.3.1",
-    "@pankod/refine-core": "^3.99.4",
-    "@types/react": "^17.0.39"
-  },
-  "gitHead": "829f5a516f98c06f666d6be3e6e6099c75c07719",
-  "publishConfig": {
-    "access": "public"
-  }
 }
