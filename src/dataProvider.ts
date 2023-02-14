@@ -1,4 +1,11 @@
-import { CrudFilters, CrudSorting, DataProvider } from "@pankod/refine-core";
+import {
+    ConditionalFilter,
+    CrudFilter,
+    CrudFilters,
+    CrudSorting,
+    DataProvider,
+    LogicalFilter,
+} from "@pankod/refine-core";
 
 const operators = {
     eq: "_eq",
@@ -10,13 +17,23 @@ const operators = {
     in: "_in",
     nin: "_nin",
     contains: "_contains",
-    containss: undefined,
+    containss: "_icontains",
     ncontains: "_ncontains",
     ncontainss: undefined,
     null: "_null",
     nnull: "_nnull",
     between: "_between",
     nbetween: "_nbetween",
+    startswith: "_starts_with",
+    startswiths: undefined,
+    nstartswith: "_nstarts_with",
+    nstartswiths: undefined,
+    endswith: "_ends_with",
+    endswiths: undefined,
+    nendswith: "_nends_with",
+    nendswiths: undefined,
+    or: "_or",
+    and: "_and",
 };
 
 const strToObj = (str: string, val: any) => {
@@ -37,9 +54,7 @@ const generateSort = (sort?: CrudSorting) => {
     if (sort) {
         sort.map((item) => {
             if (item.order) {
-                item.order === "desc"
-                    ? _sort.push(`-${item.field}`)
-                    : _sort.push(`${item.field}`);
+                item.order === "desc" ? _sort.push(`-${item.field}`) : _sort.push(`${item.field}`);
             }
         });
     }
@@ -53,38 +68,60 @@ const generateFilter = (filters?: CrudFilters) => {
     if (filters) {
         queryFilters["_and"] = [];
         filters.map((filter) => {
-            if (filter.operator !== "or") {
+            if (filter.operator !== "or" && filter.operator !== "and" && "field" in filter) {
                 const { field, operator, value } = filter;
 
                 if (value) {
                     if (field === "search") {
                         search = value;
                     } else {
-                        const directusOperator = operators[operator];
-                        let queryField = `${field}.${directusOperator}`;
-                        let filterObj = strToObj(queryField, value);
-
-                        queryFilters["_and"].push(filterObj);
+                        let logicalFilter = generateLogicalFilter(filter);
+                        logicalFilter && queryFilters["_and"].push(logicalFilter);
                     }
                 }
             } else {
-                // TODO: implement "or" operator filters for directus
-                const { value } = filter;
-                const orFilters: { [key: string]: any } = {};
-                orFilters["_or"] = [];
-                value.map((item) => {
-                    const { field, operator, value } = item;
-                    const directusOperator = operators[operator];
-                    let queryField = `${field}.${directusOperator}`;
-                    let filterObj = strToObj(queryField, value);
-                    orFilters["_or"].push(filterObj);
-                });
-                queryFilters["_and"].push(orFilters);
+                let conditionalFilter = generateConditionalFilter(filter);
+                conditionalFilter && queryFilters["_and"].push(conditionalFilter);
             }
         });
     }
 
     return { search: search, filters: queryFilters };
+};
+
+//Function to handle logical filters
+const generateLogicalFilter = (item?: LogicalFilter) => {
+    if (item === undefined) return null;
+
+    const { field, operator, value } = item;
+    const directusOperator = operators[operator];
+    let queryField = `${field}.${directusOperator}`;
+    let filterObj = strToObj(queryField, value);
+
+    return filterObj;
+};
+
+//Function to handle conditional filters
+const generateConditionalFilter = (item?: ConditionalFilter) => {
+    if (item === undefined) return null;
+
+    const { operator, value } = item;
+    const directusOperator = operators[operator];
+
+    const conditionalFilters: { [key: string]: any } = {};
+    conditionalFilters[directusOperator] = [];
+
+    value.map((item) => {
+        if ("field" in item) {
+            let logicalFilter = generateLogicalFilter(item);
+            logicalFilter && conditionalFilters[directusOperator].push(logicalFilter);
+        } else {
+            let conditionalFilter = generateConditionalFilter(item);
+            conditionalFilter && conditionalFilters[directusOperator].push(conditionalFilter);
+        }
+    });
+
+    return conditionalFilters;
 };
 
 export const dataProvider = (directusClient: any): DataProvider => ({
@@ -97,7 +134,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         const directus = directusClient.items(resource);
 
-        let status: any = { status: { _neq: 'archived' } };
+        let status: any = { status: { _neq: "archived" } };
 
         if (metaData?.archived === true) {
             status = {};
@@ -112,7 +149,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             ...search,
             filter: {
                 ...paramsFilters.filters,
-                ...status
+                ...status,
             },
             meta: "*",
             page: current,
@@ -148,7 +185,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         let params: any = {
             filter: {
-                id: { _in: ids }
+                id: { _in: ids },
             },
             fields: ["*"],
             ...metaData,

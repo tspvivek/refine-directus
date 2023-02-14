@@ -829,13 +829,23 @@ var operators = {
   "in": "_in",
   nin: "_nin",
   contains: "_contains",
-  containss: undefined,
+  containss: "_icontains",
   ncontains: "_ncontains",
   ncontainss: undefined,
   "null": "_null",
   nnull: "_nnull",
   between: "_between",
-  nbetween: "_nbetween"
+  nbetween: "_nbetween",
+  startswith: "_starts_with",
+  startswiths: undefined,
+  nstartswith: "_nstarts_with",
+  nstartswiths: undefined,
+  endswith: "_ends_with",
+  endswiths: undefined,
+  nendswith: "_nends_with",
+  nendswiths: undefined,
+  or: "_or",
+  and: "_and"
 };
 
 var strToObj = function strToObj(str, val) {
@@ -873,38 +883,21 @@ var generateFilter = function generateFilter(filters) {
   if (filters) {
     queryFilters["_and"] = [];
     filters.map(function (filter) {
-      if (filter.operator !== "or") {
+      if (filter.operator !== "or" && filter.operator !== "and" && "field" in filter) {
         var field = filter.field,
-            operator = filter.operator,
             value = filter.value;
 
         if (value) {
           if (field === "search") {
             search = value;
           } else {
-            var directusOperator = operators[operator];
-            var queryField = field + "." + directusOperator;
-            var filterObj = strToObj(queryField, value);
-            queryFilters["_and"].push(filterObj);
+            var logicalFilter = generateLogicalFilter(filter);
+            logicalFilter && queryFilters["_and"].push(logicalFilter);
           }
         }
       } else {
-        // TODO: implement "or" operator filters for directus
-        var _value = filter.value;
-        var orFilters = {};
-        orFilters["_or"] = [];
-
-        _value.map(function (item) {
-          var field = item.field,
-              operator = item.operator,
-              value = item.value;
-          var directusOperator = operators[operator];
-          var queryField = field + "." + directusOperator;
-          var filterObj = strToObj(queryField, value);
-          orFilters["_or"].push(filterObj);
-        });
-
-        queryFilters["_and"].push(orFilters);
+        var conditionalFilter = generateConditionalFilter(filter);
+        conditionalFilter && queryFilters["_and"].push(conditionalFilter);
       }
     });
   }
@@ -913,6 +906,38 @@ var generateFilter = function generateFilter(filters) {
     search: search,
     filters: queryFilters
   };
+}; //Function to handle logical filters
+
+
+var generateLogicalFilter = function generateLogicalFilter(item) {
+  if (item === undefined) return null;
+  var field = item.field,
+      operator = item.operator,
+      value = item.value;
+  var directusOperator = operators[operator];
+  var queryField = field + "." + directusOperator;
+  var filterObj = strToObj(queryField, value);
+  return filterObj;
+}; //Function to handle conditional filters
+
+
+var generateConditionalFilter = function generateConditionalFilter(item) {
+  if (item === undefined) return null;
+  var operator = item.operator,
+      value = item.value;
+  var directusOperator = operators[operator];
+  var conditionalFilters = {};
+  conditionalFilters[directusOperator] = [];
+  value.map(function (item) {
+    if ("field" in item) {
+      var logicalFilter = generateLogicalFilter(item);
+      logicalFilter && conditionalFilters[directusOperator].push(logicalFilter);
+    } else {
+      var conditionalFilter = generateConditionalFilter(item);
+      conditionalFilter && conditionalFilters[directusOperator].push(conditionalFilter);
+    }
+  });
+  return conditionalFilters;
 };
 
 var dataProvider = function dataProvider(directusClient) {
@@ -933,7 +958,7 @@ var dataProvider = function dataProvider(directusClient) {
                 directus = directusClient.items(resource);
                 status = {
                   status: {
-                    _neq: 'archived'
+                    _neq: "archived"
                   }
                 };
 
