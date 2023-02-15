@@ -32,6 +32,7 @@ const authProvider: AuthProvider = {
 			const data = await directusAuthHelper.me({ fields: [ '*.*' ] });
 			return Promise.resolve(data);
 		} catch (e) {
+			window.location.href = "/login";
 			return Promise.reject();
 		}
 	}
