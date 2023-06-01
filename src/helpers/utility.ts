@@ -130,7 +130,7 @@ export const mediaUploadMapper = (params: any, mediaConfigList: MediaConfig[]) =
                     params[item] = ids;
                 }
                 else {
-                    params[item] = ids[0];
+                    params[item] = ids[0] ? ids[0] : null;
                 }
             }
         }
