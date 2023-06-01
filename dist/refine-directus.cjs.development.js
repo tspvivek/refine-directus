@@ -1749,7 +1749,7 @@ var mediaUploadMapper = function mediaUploadMapper(params, mediaConfigList) {
         if (mediaConfig.multiple) {
           params[item] = ids;
         } else {
-          params[item] = ids[0];
+          params[item] = ids[0] ? ids[0] : null;
         }
       }
     }
