@@ -5,7 +5,7 @@ import {
     CrudSorting,
     DataProvider,
     LogicalFilter,
-} from "@pankod/refine-core";
+} from "@refinedev/core";
 
 const operators = {
     eq: "_eq",
@@ -125,18 +125,18 @@ const generateConditionalFilter = (item?: ConditionalFilter) => {
 };
 
 export const dataProvider = (directusClient: any): DataProvider => ({
-    getList: async ({ resource, pagination, filters, sort, metaData }) => {
+    getList: async ({ resource, pagination, filters, sorters, meta }) => {
         const current = pagination?.current || 1;
         const pageSize = pagination?.pageSize || 50;
 
-        const _sort = generateSort(sort);
+        const _sort = generateSort(sorters);
         const paramsFilters = generateFilter(filters);
 
         const directus = directusClient.items(resource);
 
         let status: any = { status: { _neq: "archived" } };
 
-        if (metaData?.archived === true) {
+        if (meta?.archived === true) {
             status = {};
         }
 
@@ -155,11 +155,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             page: current,
             limit: pageSize,
             fields: ["*"],
-            ...metaData,
+            ...meta,
         };
 
         let sortString: any = null;
-        if (sort && sort.length > 0) {
+        if (sorters && sorters.length > 0) {
             sortString = _sort.join(",");
         }
 
@@ -180,7 +180,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    getMany: async ({ resource, ids, metaData }) => {
+    getMany: async ({ resource, ids, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
@@ -188,7 +188,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                 id: { _in: ids },
             },
             fields: ["*"],
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -204,12 +204,12 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    create: async ({ resource, variables, metaData }) => {
+    create: async ({ resource, variables, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -224,12 +224,12 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    update: async ({ resource, id, variables, metaData }) => {
+    update: async ({ resource, id, variables, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -244,12 +244,12 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    updateMany: async ({ resource, ids, variables, metaData }) => {
+    updateMany: async ({ resource, ids, variables, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -264,12 +264,12 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    createMany: async ({ resource, variables, metaData }) => {
+    createMany: async ({ resource, variables, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
             ...variables,
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -284,11 +284,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    getOne: async ({ resource, id, metaData }) => {
+    getOne: async ({ resource, id, meta }) => {
         const directus = directusClient.items(resource);
 
         let params: any = {
-            ...metaData,
+            ...meta,
         };
 
         try {
@@ -303,14 +303,14 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    deleteOne: async ({ resource, id, metaData }) => {
+    deleteOne: async ({ resource, id, meta }) => {
         const directus = directusClient.items(resource);
 
         try {
-            if (metaData && metaData.deleteType === "archive") {
+            if (meta && meta.deleteType === "archive") {
                 let params: any = {
                     status: "archived",
-                    ...metaData,
+                    ...meta,
                 };
 
                 const response: any = await directus.updateOne(id, params);
@@ -331,14 +331,14 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
     },
 
-    deleteMany: async ({ resource, ids, metaData }) => {
+    deleteMany: async ({ resource, ids, meta }) => {
         const directus = directusClient.items(resource);
 
         try {
-            if (metaData && metaData.deleteType === "archive") {
+            if (meta && meta.deleteType === "archive") {
                 let params: any = {
                     status: "archived",
-                    ...metaData,
+                    ...meta,
                 };
                 const response: any = await directus.updateMany(ids, params);
 
@@ -362,7 +362,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         return directusClient.url;
     },
 
-    custom: async ({ url, method, filters, sort, payload, query, headers }) => {
+    custom: async ({ url, method, filters, sorters, payload, query, headers }) => {
         const directusTransport = directusClient.transport;
 
         let response: any;

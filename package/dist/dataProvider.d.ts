@@ -1,2 +1,2 @@
-import { DataProvider } from "@pankod/refine-core";
+import { DataProvider } from "@refinedev/core";
 export declare const dataProvider: (directusClient: any) => DataProvider;

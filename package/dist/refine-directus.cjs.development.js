@@ -944,16 +944,16 @@ var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(_ref) {
-        var resource, pagination, filters, sort, metaData, current, pageSize, _sort, paramsFilters, directus, status, search, params, sortString, response;
+        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, directus, status, search, params, sortString, response;
 
         return runtime_1.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                resource = _ref.resource, pagination = _ref.pagination, filters = _ref.filters, sort = _ref.sort, metaData = _ref.metaData;
+                resource = _ref.resource, pagination = _ref.pagination, filters = _ref.filters, sorters = _ref.sorters, meta = _ref.meta;
                 current = (pagination == null ? void 0 : pagination.current) || 1;
                 pageSize = (pagination == null ? void 0 : pagination.pageSize) || 50;
-                _sort = generateSort(sort);
+                _sort = generateSort(sorters);
                 paramsFilters = generateFilter(filters);
                 directus = directusClient.items(resource);
                 status = {
@@ -962,7 +962,7 @@ var dataProvider = function dataProvider(directusClient) {
                   }
                 };
 
-                if ((metaData == null ? void 0 : metaData.archived) === true) {
+                if ((meta == null ? void 0 : meta.archived) === true) {
                   status = {};
                 }
 
@@ -980,10 +980,10 @@ var dataProvider = function dataProvider(directusClient) {
                   page: current,
                   limit: pageSize,
                   fields: ["*"]
-                }, metaData);
+                }, meta);
                 sortString = null;
 
-                if (sort && sort.length > 0) {
+                if (sorters && sorters.length > 0) {
                   sortString = _sort.join(",");
                 }
 
@@ -1024,12 +1024,12 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getMany: function () {
       var _getMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(_ref2) {
-        var resource, ids, metaData, directus, params, response;
+        var resource, ids, meta, directus, params, response;
         return runtime_1.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                resource = _ref2.resource, ids = _ref2.ids, metaData = _ref2.metaData;
+                resource = _ref2.resource, ids = _ref2.ids, meta = _ref2.meta;
                 directus = directusClient.items(resource);
                 params = _extends({
                   filter: {
@@ -1038,7 +1038,7 @@ var dataProvider = function dataProvider(directusClient) {
                     }
                   },
                   fields: ["*"]
-                }, metaData);
+                }, meta);
                 _context2.prev = 3;
                 _context2.next = 6;
                 return directus.readByQuery(params);
@@ -1072,14 +1072,14 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     create: function () {
       var _create = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(_ref3) {
-        var resource, variables, metaData, directus, params, response;
+        var resource, variables, meta, directus, params, response;
         return runtime_1.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                resource = _ref3.resource, variables = _ref3.variables, metaData = _ref3.metaData;
+                resource = _ref3.resource, variables = _ref3.variables, meta = _ref3.meta;
                 directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
+                params = _extends({}, variables, meta);
                 _context3.prev = 3;
                 _context3.next = 6;
                 return directus.createOne(params);
@@ -1112,14 +1112,14 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     update: function () {
       var _update = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(_ref4) {
-        var resource, id, variables, metaData, directus, params, response;
+        var resource, id, variables, meta, directus, params, response;
         return runtime_1.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                resource = _ref4.resource, id = _ref4.id, variables = _ref4.variables, metaData = _ref4.metaData;
+                resource = _ref4.resource, id = _ref4.id, variables = _ref4.variables, meta = _ref4.meta;
                 directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
+                params = _extends({}, variables, meta);
                 _context4.prev = 3;
                 _context4.next = 6;
                 return directus.updateOne(id, params);
@@ -1152,14 +1152,14 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     updateMany: function () {
       var _updateMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee5(_ref5) {
-        var resource, ids, variables, metaData, directus, params, response;
+        var resource, ids, variables, meta, directus, params, response;
         return runtime_1.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                resource = _ref5.resource, ids = _ref5.ids, variables = _ref5.variables, metaData = _ref5.metaData;
+                resource = _ref5.resource, ids = _ref5.ids, variables = _ref5.variables, meta = _ref5.meta;
                 directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
+                params = _extends({}, variables, meta);
                 _context5.prev = 3;
                 _context5.next = 6;
                 return directus.updateMany(ids, params);
@@ -1192,14 +1192,14 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     createMany: function () {
       var _createMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee6(_ref6) {
-        var resource, variables, metaData, directus, params, response;
+        var resource, variables, meta, directus, params, response;
         return runtime_1.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                resource = _ref6.resource, variables = _ref6.variables, metaData = _ref6.metaData;
+                resource = _ref6.resource, variables = _ref6.variables, meta = _ref6.meta;
                 directus = directusClient.items(resource);
-                params = _extends({}, variables, metaData);
+                params = _extends({}, variables, meta);
                 _context6.prev = 3;
                 _context6.next = 6;
                 return directus.createMany(params);
@@ -1232,14 +1232,14 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getOne: function () {
       var _getOne = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee7(_ref7) {
-        var resource, id, metaData, directus, params, response;
+        var resource, id, meta, directus, params, response;
         return runtime_1.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                resource = _ref7.resource, id = _ref7.id, metaData = _ref7.metaData;
+                resource = _ref7.resource, id = _ref7.id, meta = _ref7.meta;
                 directus = directusClient.items(resource);
-                params = _extends({}, metaData);
+                params = _extends({}, meta);
                 _context7.prev = 3;
                 _context7.next = 6;
                 return directus.readOne(id, params);
@@ -1272,24 +1272,24 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteOne: function () {
       var _deleteOne = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee8(_ref8) {
-        var resource, id, metaData, directus, params, response, _response;
+        var resource, id, meta, directus, params, response, _response;
 
         return runtime_1.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                resource = _ref8.resource, id = _ref8.id, metaData = _ref8.metaData;
+                resource = _ref8.resource, id = _ref8.id, meta = _ref8.meta;
                 directus = directusClient.items(resource);
                 _context8.prev = 2;
 
-                if (!(metaData && metaData.deleteType === "archive")) {
+                if (!(meta && meta.deleteType === "archive")) {
                   _context8.next = 11;
                   break;
                 }
 
                 params = _extends({
                   status: "archived"
-                }, metaData);
+                }, meta);
                 _context8.next = 7;
                 return directus.updateOne(id, params);
 
@@ -1335,24 +1335,24 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteMany: function () {
       var _deleteMany = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee9(_ref9) {
-        var resource, ids, metaData, directus, params, response, _response2;
+        var resource, ids, meta, directus, params, response, _response2;
 
         return runtime_1.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                resource = _ref9.resource, ids = _ref9.ids, metaData = _ref9.metaData;
+                resource = _ref9.resource, ids = _ref9.ids, meta = _ref9.meta;
                 directus = directusClient.items(resource);
                 _context9.prev = 2;
 
-                if (!(metaData && metaData.deleteType === "archive")) {
+                if (!(meta && meta.deleteType === "archive")) {
                   _context9.next = 11;
                   break;
                 }
 
                 params = _extends({
                   status: "archived"
-                }, metaData);
+                }, meta);
                 _context9.next = 7;
                 return directus.updateMany(ids, params);
 
