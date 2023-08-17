@@ -1,4 +1,4 @@
-import { AuthProvider, useLogout } from '@pankod/refine-core';
+import { LegacyAuthProvider as AuthProvider, useLogout } from "@refinedev/core";
 import { AuthHelper } from '@tspvivek/refine-directus';
 import { directusClient } from './directusClient';
 

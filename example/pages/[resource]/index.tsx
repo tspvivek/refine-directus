@@ -1,6 +1,6 @@
-export { NextRouteComponent as default } from "@pankod/refine-nextjs-router";
+export { NextRouteComponent as default } from "@refinedev/nextjs-router/legacy";
 
-import { checkAuthentication } from "@pankod/refine-nextjs-router";
+import { checkAuthentication } from "@refinedev/nextjs-router/legacy";
 import { dataProvider } from "@tspvivek/refine-directus";
 
 

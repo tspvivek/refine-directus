@@ -1,15 +1,7 @@
-import { GetListResponse, useDataProvider } from "@pankod/refine-core";
-import {
-    useTable,
-    List,
-    Table,
-    Space,
-    EditButton,
-    ShowButton,
-    DeleteButton,
-    Avatar,
-} from "@pankod/refine-antd";
-import type { IResourceComponentsProps } from "@pankod/refine-core";
+import { GetListResponse, useDataProvider } from "@refinedev/core";
+import { useTable, List, EditButton, ShowButton, DeleteButton } from "@refinedev/antd";
+import { Table, Space, Avatar } from "antd";
+import { IResourceComponentsProps } from "@refinedev/core";
 import { IPost } from "../../interfaces";
 
 export const PostList: React.FC<

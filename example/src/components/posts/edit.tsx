@@ -1,27 +1,24 @@
-import {
-    useForm,
-    useSelect,
-    Edit,
-    Form,
-    Input,
-    Select,
-    Upload,
-    RcFile,
-} from "@pankod/refine-antd";
-import { useApiUrl, useDataProvider } from "@pankod/refine-core";
+import { useForm, useSelect, Edit } from "@refinedev/antd";
+import { RcFile } from "antd/lib/upload/interface";
+import { Form, Input, Select, Upload } from "antd";
+import { useApiUrl, useDataProvider } from "@refinedev/core";
 import { getValueProps, MediaConfig, mediaUploadMapper, useDirectusUpload } from "@tspvivek/refine-directus";
 import { directusClient } from "src/directusClient";
-import { IPost } from "src/interfaces";
+import { ICategory, IPost } from "src/interfaces";
 
 
 export const PostEdit: React.FC = () => {
-    const { formProps, saveButtonProps, queryResult } = useForm<IPost>({ metaData: { fields: ['*', 'image.*', 'gallery.*.*'] } });
+    const { formProps, saveButtonProps, queryResult } = useForm<IPost>({ meta: { fields: ['*', 'image.*', 'gallery.*.*'] } });
     const apiUrl = useApiUrl();
 
-    const { selectProps: categorySelectProps } = useSelect<IPost>({
+    const { selectProps: categorySelectProps } = useSelect<ICategory>({
         resource: "categories",
         optionLabel: "name",
         optionValue: "id",
+
+        pagination: {
+            mode: "server"
+        }
     });
 
     //List of media field and their config

@@ -1,5 +1,6 @@
-import { useOne, useShow } from "@pankod/refine-core";
-import { Show, Typography, Tag } from "@pankod/refine-antd";
+import { useOne, useShow } from "@refinedev/core";
+import { Show } from "@refinedev/antd";
+import { Typography, Tag } from "antd";
 import { ICategory } from "src/interfaces";
 
 const { Title, Text } = Typography;
@@ -11,11 +12,13 @@ export const PostShow: React.FC = () => {
 
     const { data: categoryData } = useOne<ICategory>({
         resource: "categories",
-        id: record?.category.id || "",
+        id: record?.category || "",
         queryOptions: {
-            enabled: !!record?.category.id,
+            enabled: !!record?.category,
         },
     });
+
+    console.log(categoryData);
 
     return (
         <Show isLoading={isLoading}>
@@ -28,7 +31,7 @@ export const PostShow: React.FC = () => {
             </Text>
 
             <Title level={5}>Category</Title>
-            <Text>{categoryData?.data.title}</Text>
+            <Text>{categoryData?.data.name}</Text>
         </Show>
     );
 };

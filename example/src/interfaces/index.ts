@@ -8,5 +8,5 @@ export interface IPost {
 
 export interface ICategory {
     id: string;
-    title: string;
+    name: string;
 }
