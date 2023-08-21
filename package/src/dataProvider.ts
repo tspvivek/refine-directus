@@ -1,23 +1,16 @@
 // @ts-nocheck
 import {
-    authentication,
-    createDirectus,
     createItem,
     createItems,
     deleteItem,
     deleteItems,
     readItem,
     readItems,
-    rest,
-    updateCollection,
     updateItem,
     updateItems,
-    withToken,
 } from "@directus/sdk";
 import {
-    BaseKey,
     ConditionalFilter,
-    CrudFilter,
     CrudFilters,
     CrudSorting,
     DataProvider,
