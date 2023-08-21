@@ -1,4 +1,6 @@
+//@ts-nocheck
 import { useState } from "react";
+import { uploadFiles } from "@directus/sdk";
 
 export interface MediaConfig {
     maxCount: number;
@@ -79,7 +81,7 @@ export const useDirectusUpload = (mediaConfigList: MediaConfig[], directusClient
             const form = new FormData();
             form.append("file", file);
 
-            const data = await directusClient.files.createOne(form);
+            const data = await directusClient.request(uploadFiles(form));
             onSuccess?.({ data }, new XMLHttpRequest());
         } catch (error) {
             onError?.(new Error("Upload Error"));

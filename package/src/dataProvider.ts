@@ -1,4 +1,21 @@
+// @ts-nocheck
 import {
+    authentication,
+    createDirectus,
+    createItem,
+    createItems,
+    deleteItem,
+    deleteItems,
+    readItem,
+    readItems,
+    rest,
+    updateCollection,
+    updateItem,
+    updateItems,
+    withToken,
+} from "@directus/sdk";
+import {
+    BaseKey,
     ConditionalFilter,
     CrudFilter,
     CrudFilters,
@@ -132,9 +149,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const _sort = generateSort(sorters);
         const paramsFilters = generateFilter(filters);
 
-        const directus = directusClient.items(resource);
-
         let status: any = { status: { _neq: "archived" } };
+        let fields: any = meta?.fields ? meta.fields : ["*"];
+
+        //Delete fields from meta
+        delete meta?.fields;
 
         if (meta?.archived === true) {
             status = {};
@@ -154,7 +173,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             meta: "*",
             page: current,
             limit: pageSize,
-            fields: ["*"],
             ...meta,
         };
 
@@ -168,11 +186,16 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
 
         try {
-            const response: any = await directus.readByQuery(params);
+            //const response: any = await directus.readByQuery(params);
+
+            const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+            const total = await directusClient.request(
+                readItems(resource, { ...params, ...{ "aggregate[countDistinct]": ["id"] } })
+            );
 
             return {
-                data: response.data,
-                total: response.meta.filter_count,
+                data: response,
+                total: total[0]?.countDistinct?.id ?? 0,
             };
         } catch (e) {
             console.log(e);
@@ -181,22 +204,27 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getMany: async ({ resource, ids, meta }) => {
-        const directus = directusClient.items(resource);
+        let fields: any = meta?.fields ? meta.fields : ["*"];
+
+        //Delete fields from meta
+        delete meta?.fields;
 
         let params: any = {
             filter: {
                 id: { _in: ids },
             },
-            fields: ["*"],
             ...meta,
         };
 
         try {
-            const response: any = await directus.readByQuery(params);
+            const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+            const total = await directusClient.request(
+                readItems(resource, { ...params, ...{ "aggregate[countDistinct]": ["id"] } })
+            );
 
             return {
-                data: response.data,
-                total: response.meta.filter_count,
+                data: response,
+                total: total[0]?.countDistinct?.id ?? 0,
             };
         } catch (e) {
             console.log(e);
@@ -205,15 +233,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     create: async ({ resource, variables, meta }) => {
-        const directus = directusClient.items(resource);
-
         let params: any = {
             ...variables,
             ...meta,
         };
 
         try {
-            const response: any = await directus.createOne(params);
+            const response: any = await directusClient.request(createItem(resource, params));
 
             return {
                 data: response,
@@ -225,15 +251,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     update: async ({ resource, id, variables, meta }) => {
-        const directus = directusClient.items(resource);
-
         let params: any = {
             ...variables,
             ...meta,
         };
 
         try {
-            const response: any = await directus.updateOne(id, params);
+            const response: any = await directusClient.request(updateItem(resource, id, params));
 
             return {
                 data: response,
@@ -245,7 +269,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     updateMany: async ({ resource, ids, variables, meta }) => {
-        const directus = directusClient.items(resource);
+        let idsFormatted: any = ids;
 
         let params: any = {
             ...variables,
@@ -253,10 +277,10 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directus.updateMany(ids, params);
+            const response: any = await directusClient.request(updateItems(resource, idsFormatted, params));
 
             return {
-                data: response.data,
+                data: response,
             };
         } catch (e) {
             console.log(e);
@@ -265,18 +289,16 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     createMany: async ({ resource, variables, meta }) => {
-        const directus = directusClient.items(resource);
-
         let params: any = {
             ...variables,
             ...meta,
         };
 
         try {
-            const response: any = await directus.createMany(params);
+            const response: any = await directusClient.request(createItems(resource, params));
 
             return {
-                data: response.data,
+                data: response,
             };
         } catch (e) {
             console.log(e);
@@ -285,18 +307,16 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getOne: async ({ resource, id, meta }) => {
-        const directus = directusClient.items(resource);
-
         let params: any = {
             ...meta,
         };
 
         try {
-            const response: any = await directus.readOne(id, params);
+            const response: any = await directusClient.request(readItem(resource, id, params));
 
-            return Promise.resolve({
+            return {
                 data: response,
-            });
+            };
         } catch (e) {
             console.log(e);
             throw new Error(e.errors && e.errors[0] && e.errors[0].message);
@@ -304,8 +324,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     deleteOne: async ({ resource, id, meta }) => {
-        const directus = directusClient.items(resource);
-
         try {
             if (meta && meta.deleteType === "archive") {
                 let params: any = {
@@ -313,13 +331,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                     ...meta,
                 };
 
-                const response: any = await directus.updateOne(id, params);
+                const response: any = await directusClient.request(updateItem(resource, id, params));
 
                 return {
                     data: response,
                 };
             } else {
-                const response: any = await directus.deleteOne(id);
+                const response: any = await directusClient.request(deleteItem(resource, id));
 
                 return {
                     data: response,
@@ -332,21 +350,22 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     deleteMany: async ({ resource, ids, meta }) => {
-        const directus = directusClient.items(resource);
-
         try {
+            let idsFormatted: any = ids;
+
             if (meta && meta.deleteType === "archive") {
                 let params: any = {
                     status: "archived",
                     ...meta,
                 };
-                const response: any = await directus.updateMany(ids, params);
+
+                const response: any = await directusClient.request(updateItems(resource, idsFormatted, params));
 
                 return {
                     data: response,
                 };
             } else {
-                const response: any = await directus.deleteMany(ids);
+                const response: any = await directusClient.request(deleteItems(resource, idsFormatted));
 
                 return {
                     data: response.data,
@@ -359,43 +378,51 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getApiUrl: () => {
-        return directusClient.url;
+        const url: any = directusClient.url;
+        return url;
     },
 
     custom: async ({ url, method, filters, sorters, payload, query, headers }) => {
-        const directusTransport = directusClient.transport;
-
         let response: any;
         switch (method) {
             case "put":
-                response = await directusTransport.put(url, payload, {
-                    headers: headers,
-                    params: query,
-                });
+                response = await directusClient.request(() => ({
+                    path: url,
+                    method: "PUT",
+                    body: JSON.stringify(payload),
+                    params: query as any,
+                }));
+
                 break;
             case "post":
-                response = await directusTransport.post(url, payload, {
-                    headers: headers,
-                    params: query,
-                });
+                response = await directusClient.request(() => ({
+                    path: url,
+                    method: "POST",
+                    body: JSON.stringify(payload),
+                    params: query as any,
+                }));
                 break;
             case "patch":
-                response = await directusTransport.patch(url, payload, {
-                    headers: headers,
-                    params: query,
-                });
+                response = await directusClient.request(() => ({
+                    path: url,
+                    method: "PATCH",
+                    body: JSON.stringify(payload),
+                    params: query as any,
+                }));
                 break;
             case "delete":
-                response = await directusTransport.delete(url, {
-                    headers: headers,
-                    params: query,
-                });
+                response = await directusClient.request(() => ({
+                    path: url,
+                    method: "DELETE",
+                    params: query as any,
+                }));
                 break;
             default:
-                response = await directusTransport.get(url, {
-                    headers: headers,
-                    params: query,
-                });
+                response = await directusClient.request(() => ({
+                    path: "url",
+                    method: GET,
+                    params: query as any,
+                }));
                 break;
         }
 

@@ -1,4 +1,4 @@
-import { GetListResponse, useDataProvider } from "@refinedev/core";
+import { GetListResponse, useCustom, useDataProvider } from "@refinedev/core";
 import { useTable, List, EditButton, ShowButton, DeleteButton } from "@refinedev/antd";
 import { Table, Space, Avatar } from "antd";
 import { IResourceComponentsProps } from "@refinedev/core";
@@ -13,6 +13,21 @@ export const PostList: React.FC<
     const { tableProps } = useTable<IPost>({
         syncWithLocation: false
     });
+
+    //Sample useCustom hook
+    /*
+    const { refetch } = useCustom<any>({
+        url: "/items/posts/2",
+        method: "patch",
+        config: {
+            payload: { title:"Testing Custom 2"},
+            query: { fields: ['*', 'image.*', 'gallery.*.*'] }
+        },
+        queryOptions: {
+            enabled: true,
+        },
+    });
+    */
 
     return (
         <List>
