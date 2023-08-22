@@ -34,6 +34,7 @@ export const PostList: React.FC<IResourceComponentsProps<GetListResponse<IPost>>
     });
     */
 
+    //Sample useResourceSubscription hook
     useResourceSubscription({
         resource: "posts",
         types: ["created"],
@@ -46,27 +47,6 @@ export const PostList: React.FC<IResourceComponentsProps<GetListResponse<IPost>>
         }
     });
 
-/*
-    useEffect(() => {
-        async function test() {
-
-            console.log("test");
-            const { subscription, unsubscribe } = await directusClient.subscribe("posts", {
-                query: { fields: ["*"] },
-                uid: "posts_create",
-                event: "create",
-            });
-
-            //unsubscribe();
-
-            for await (const item of subscription) {
-                // this loop wil await new subscription events
-                console.log("subscription", item);
-            }
-        }
-        test();
-    }, []); 
-*/
     return (
         <List>
             <Table {...tableProps} rowKey="id">
