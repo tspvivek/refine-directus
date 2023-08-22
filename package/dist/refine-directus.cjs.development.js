@@ -5,6 +5,50 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var sdk = require('@directus/sdk');
 var react = require('react');
 
+function _asyncIterator(iterable) {
+  var method,
+    async,
+    sync,
+    retry = 2;
+  for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) {
+    if (async && null != (method = iterable[async])) return method.call(iterable);
+    if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable));
+    async = "@@asyncIterator", sync = "@@iterator";
+  }
+  throw new TypeError("Object is not async iterable");
+}
+function AsyncFromSyncIterator(s) {
+  function AsyncFromSyncIteratorContinuation(r) {
+    if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object."));
+    var done = r.done;
+    return Promise.resolve(r.value).then(function (value) {
+      return {
+        value: value,
+        done: done
+      };
+    });
+  }
+  return AsyncFromSyncIterator = function (s) {
+    this.s = s, this.n = s.next;
+  }, AsyncFromSyncIterator.prototype = {
+    s: null,
+    n: null,
+    next: function () {
+      return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments));
+    },
+    return: function (value) {
+      var ret = this.s.return;
+      return void 0 === ret ? Promise.resolve({
+        value: value,
+        done: !0
+      }) : AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments));
+    },
+    throw: function (value) {
+      var thr = this.s.return;
+      return void 0 === thr ? Promise.reject(value) : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments));
+    }
+  }, new AsyncFromSyncIterator(s);
+}
 function _regeneratorRuntime() {
   _regeneratorRuntime = function () {
     return exports;
@@ -893,7 +937,6 @@ var dataProvider = function dataProvider(directusClient) {
                 return {
                   path: url,
                   method: "DELETE",
-                  body: payload,
                   params: query
                 };
               });
@@ -926,6 +969,145 @@ var dataProvider = function dataProvider(directusClient) {
         return _custom.apply(this, arguments);
       }
       return custom;
+    }()
+  };
+};
+
+var eventsMap = {
+  created: "create",
+  updated: "update",
+  deleted: "delete"
+};
+var liveProvider = function liveProvider(directusClient, options) {
+  var openConnections = {};
+  return {
+    subscribe: function subscribe(_ref) {
+      var channel = _ref.channel,
+        types = _ref.types,
+        params = _ref.params,
+        callback = _ref.callback;
+      var connectionId = channel ? channel : Date.now() + "_" + Math.random().toString(36).substring(2, 15);
+      var options = {
+        uid: connectionId
+      };
+      if (params != null && params.query) {
+        options = _extends({}, options, {
+          query: params.query
+        });
+      }
+      if ((types == null ? void 0 : types.length) > 1) {
+        throw new Error("Directus does not support multiple event types in a single subscription. Please create multiple subscriptions for each event type or do not pass any event type to subscribe to all events.");
+      }
+      if (types != null && types.length && eventsMap[types[0]]) {
+        options = _extends({}, options, {
+          event: eventsMap[types[0]]
+        });
+      }
+      if (params != null && params.resource) {
+        _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+          var _yield$directusClient, subscription, unsubscribe, asyncGenerator;
+          return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+            while (1) switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return directusClient.subscribe(params == null ? void 0 : params.resource, options);
+              case 2:
+                _yield$directusClient = _context2.sent;
+                subscription = _yield$directusClient.subscription;
+                unsubscribe = _yield$directusClient.unsubscribe;
+                asyncGenerator = /*#__PURE__*/function () {
+                  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(subscription) {
+                    var _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _iterator, _step, item;
+                    return _regeneratorRuntime().wrap(function _callee$(_context) {
+                      while (1) switch (_context.prev = _context.next) {
+                        case 0:
+                          _iteratorAbruptCompletion = false;
+                          _didIteratorError = false;
+                          _context.prev = 2;
+                          _iterator = _asyncIterator(subscription);
+                        case 4:
+                          _context.next = 6;
+                          return _iterator.next();
+                        case 6:
+                          if (!(_iteratorAbruptCompletion = !(_step = _context.sent).done)) {
+                            _context.next = 12;
+                            break;
+                          }
+                          item = _step.value;
+                          // this loop wil await new subscription events
+                          callback(item);
+                        case 9:
+                          _iteratorAbruptCompletion = false;
+                          _context.next = 4;
+                          break;
+                        case 12:
+                          _context.next = 18;
+                          break;
+                        case 14:
+                          _context.prev = 14;
+                          _context.t0 = _context["catch"](2);
+                          _didIteratorError = true;
+                          _iteratorError = _context.t0;
+                        case 18:
+                          _context.prev = 18;
+                          _context.prev = 19;
+                          if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
+                            _context.next = 23;
+                            break;
+                          }
+                          _context.next = 23;
+                          return _iterator["return"]();
+                        case 23:
+                          _context.prev = 23;
+                          if (!_didIteratorError) {
+                            _context.next = 26;
+                            break;
+                          }
+                          throw _iteratorError;
+                        case 26:
+                          return _context.finish(23);
+                        case 27:
+                          return _context.finish(18);
+                        case 28:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }, _callee, null, [[2, 14, 18, 28], [19,, 23, 27]]);
+                  }));
+                  return function asyncGenerator(_x) {
+                    return _ref3.apply(this, arguments);
+                  };
+                }();
+                asyncGenerator(subscription); // create a generator
+                openConnections[connectionId] = unsubscribe;
+              case 8:
+              case "end":
+                return _context2.stop();
+            }
+          }, _callee2);
+        }))();
+        return connectionId;
+      } else throw new Error("resource is required");
+    },
+    unsubscribe: function () {
+      var _unsubscribe2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(_unsubscribe) {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              if (_unsubscribe && openConnections[_unsubscribe]) {
+                openConnections[_unsubscribe]();
+                delete openConnections[_unsubscribe];
+              }
+            case 1:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3);
+      }));
+      function unsubscribe(_x2) {
+        return _unsubscribe2.apply(this, arguments);
+      }
+      return unsubscribe;
     }()
   };
 };
@@ -1167,6 +1349,7 @@ Object.keys(sdk).forEach(function (k) {
 exports.AuthHelper = AuthHelper;
 exports.dataProvider = dataProvider;
 exports.getValueProps = getValueProps;
+exports.liveProvider = liveProvider;
 exports.mediaUploadMapper = mediaUploadMapper;
 exports.useDirectusUpload = useDirectusUpload;
 //# sourceMappingURL=refine-directus.cjs.development.js.map

@@ -28,5 +28,6 @@ To enable perform archive instead of delete with [**DeleteButton**](https://refi
 #### 1.0.20
 - update library version to directus sdk v11
 - update refine version to v4
+- added support for liveprovider using directus realtime api
 
 
