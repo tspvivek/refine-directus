@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
             legacyRouterProvider={routerProvider}
             legacyAuthProvider={authProvider}
             dataProvider={dataProvider(directusClient)}
-            liveProvider={liveProvider(directusClient)}            
+            liveProvider={liveProvider(directusClient, {})}            
             resources={[
                 {
                     name: "posts",
