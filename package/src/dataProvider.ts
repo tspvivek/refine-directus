@@ -1,5 +1,6 @@
 // @ts-nocheck
 import {
+    aggregate,
     createItem,
     createItems,
     deleteItem,
@@ -9,13 +10,8 @@ import {
     updateItem,
     updateItems,
 } from "@directus/sdk";
-import {
-    ConditionalFilter,
-    CrudFilters,
-    CrudSorting,
-    DataProvider,
-    LogicalFilter,
-} from "@refinedev/core";
+import { al } from "@directus/sdk/dist/index-c9cd424a";
+import { ConditionalFilter, CrudFilters, CrudSorting, DataProvider, LogicalFilter } from "@refinedev/core";
 
 const operators = {
     eq: "_eq",
@@ -179,11 +175,17 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
 
         try {
-            //const response: any = await directus.readByQuery(params);
-
             const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+
+            delete params["page"];
+
             const total = await directusClient.request(
-                readItems(resource, { ...params, ...{ "aggregate[countDistinct]": ["id"] } })
+                aggregate(resource, {
+                    query: params,
+                    aggregate: {
+                        countDistinct: "id",
+                    },
+                })
             );
 
             return {
@@ -211,8 +213,16 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         try {
             const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+
+            delete params["page"];
+
             const total = await directusClient.request(
-                readItems(resource, { ...params, ...{ "aggregate[countDistinct]": ["id"] } })
+                aggregate(resource, {
+                    query: params,
+                    aggregate: {
+                        countDistinct: "id",
+                    },
+                })
             );
 
             return {

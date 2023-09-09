@@ -545,26 +545,30 @@ var dataProvider = function dataProvider(directusClient) {
               return directusClient.request(sdk.readItems(resource, _extends({}, params, fields)));
             case 18:
               response = _context.sent;
-              _context.next = 21;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
-                "aggregate[countDistinct]": ["id"]
-              })));
-            case 21:
+              delete params["page"];
+              _context.next = 22;
+              return directusClient.request(sdk.aggregate(resource, {
+                query: params,
+                aggregate: {
+                  countDistinct: "id"
+                }
+              }));
+            case 22:
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$.id) != null ? _total$0$countDistinc : 0
               });
-            case 25:
-              _context.prev = 25;
+            case 26:
+              _context.prev = 26;
               _context.t0 = _context["catch"](15);
               console.log(_context.t0);
               throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
-            case 29:
+            case 30:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[15, 25]]);
+        }, _callee, null, [[15, 26]]);
       }));
       function getList(_x) {
         return _getList.apply(this, arguments);
@@ -592,26 +596,30 @@ var dataProvider = function dataProvider(directusClient) {
               return directusClient.request(sdk.readItems(resource, _extends({}, params, fields)));
             case 7:
               response = _context2.sent;
-              _context2.next = 10;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
-                "aggregate[countDistinct]": ["id"]
-              })));
-            case 10:
+              delete params["page"];
+              _context2.next = 11;
+              return directusClient.request(sdk.aggregate(resource, {
+                query: params,
+                aggregate: {
+                  countDistinct: "id"
+                }
+              }));
+            case 11:
               total = _context2.sent;
               return _context2.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc2 = (_total$2 = total[0]) == null || (_total$2 = _total$2.countDistinct) == null ? void 0 : _total$2.id) != null ? _total$0$countDistinc2 : 0
               });
-            case 14:
-              _context2.prev = 14;
+            case 15:
+              _context2.prev = 15;
               _context2.t0 = _context2["catch"](4);
               console.log(_context2.t0);
               throw new Error(_context2.t0.errors && _context2.t0.errors[0] && _context2.t0.errors[0].message);
-            case 18:
+            case 19:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[4, 14]]);
+        }, _callee2, null, [[4, 15]]);
       }));
       function getMany(_x2) {
         return _getMany.apply(this, arguments);
