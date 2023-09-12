@@ -139,7 +139,9 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const paramsFilters = generateFilter(filters);
 
         let status: any = { status: { _neq: "archived" } };
-        let fields: any = meta?.fields ? meta.fields : ["*"];
+        //Assign copy of fields
+        
+        let fields: any = meta?.fields ? [...meta.fields] : ["*"];
 
         //Delete fields from meta
         delete meta?.fields;
@@ -199,7 +201,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
     },
 
     getMany: async ({ resource, ids, meta }) => {
-        let fields: any = meta?.fields ? meta.fields : ["*"];
+        let fields: any = meta?.fields ? [...meta.fields] : ["*"];
 
         //Delete fields from meta
         delete meta?.fields;

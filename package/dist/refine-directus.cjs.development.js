@@ -515,8 +515,8 @@ var dataProvider = function dataProvider(directusClient) {
                 status: {
                   _neq: "archived"
                 }
-              };
-              fields = meta != null && meta.fields ? meta.fields : ["*"]; //Delete fields from meta
+              }; //Assign copy of fields
+              fields = meta != null && meta.fields ? [].concat(meta.fields) : ["*"]; //Delete fields from meta
               meta == null || delete meta.fields;
               if ((meta == null ? void 0 : meta.archived) === true) {
                 status = {};
@@ -582,7 +582,7 @@ var dataProvider = function dataProvider(directusClient) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               resource = _ref2.resource, ids = _ref2.ids, meta = _ref2.meta;
-              fields = meta != null && meta.fields ? meta.fields : ["*"]; //Delete fields from meta
+              fields = meta != null && meta.fields ? [].concat(meta.fields) : ["*"]; //Delete fields from meta
               meta == null || delete meta.fields;
               params = _extends({
                 filter: {
