@@ -542,7 +542,9 @@ var dataProvider = function dataProvider(directusClient) {
               }
               _context.prev = 15;
               _context.next = 18;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, fields)));
+              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
+                fields: fields
+              })));
             case 18:
               response = _context.sent;
               delete params["page"];
@@ -593,7 +595,9 @@ var dataProvider = function dataProvider(directusClient) {
               }, meta);
               _context2.prev = 4;
               _context2.next = 7;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, fields)));
+              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
+                fields: fields
+              })));
             case 7:
               response = _context2.sent;
               delete params["page"];

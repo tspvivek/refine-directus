@@ -177,7 +177,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
 
         try {
-            const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+            const response: any = await directusClient.request(readItems(resource, { ...params, fields }));
 
             delete params["page"];
 
@@ -214,7 +214,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(readItems(resource, { ...params, ...fields }));
+            const response: any = await directusClient.request(readItems(resource, { ...params, fields }));
 
             delete params["page"];
 
