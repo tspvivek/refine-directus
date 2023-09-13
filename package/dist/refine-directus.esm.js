@@ -957,7 +957,7 @@ var dataProvider = function dataProvider(directusClient) {
               _context10.next = 22;
               return directusClient.request(function () {
                 return {
-                  path: "url",
+                  path: url,
                   method: "GET",
                   params: query
                 };
