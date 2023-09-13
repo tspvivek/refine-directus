@@ -427,7 +427,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
             default:
                 response = await directusClient.request(() => ({
                     path: "url",
-                    method: GET,
+                    method: "GET",
                     params: query as any,
                 }));
                 break;

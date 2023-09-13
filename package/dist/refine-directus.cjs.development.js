@@ -961,7 +961,7 @@ var dataProvider = function dataProvider(directusClient) {
               return directusClient.request(function () {
                 return {
                   path: "url",
-                  method: GET,
+                  method: "GET",
                   params: query
                 };
               });
