@@ -181,11 +181,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
             delete params["page"];
 
+            const aggregateField = meta?.aggregateField ? meta.aggregateField : "id";
+
             const total = await directusClient.request(
                 aggregate(resource, {
                     query: params,
                     aggregate: {
-                        countDistinct: "id",
+                        countDistinct: aggregateField,
                     },
                 })
             );

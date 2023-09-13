@@ -502,7 +502,7 @@ var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _total$0$countDistinc, _total$, response, total;
+        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _total$0$countDistinc, _total$, response, aggregateField, total;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -548,29 +548,30 @@ var dataProvider = function dataProvider(directusClient) {
             case 18:
               response = _context.sent;
               delete params["page"];
-              _context.next = 22;
+              aggregateField = meta != null && meta.aggregateField ? meta.aggregateField : "id";
+              _context.next = 23;
               return directusClient.request(sdk.aggregate(resource, {
                 query: params,
                 aggregate: {
-                  countDistinct: "id"
+                  countDistinct: aggregateField
                 }
               }));
-            case 22:
+            case 23:
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$.id) != null ? _total$0$countDistinc : 0
               });
-            case 26:
-              _context.prev = 26;
+            case 27:
+              _context.prev = 27;
               _context.t0 = _context["catch"](15);
               console.log(_context.t0);
               throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
-            case 30:
+            case 31:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[15, 26]]);
+        }, _callee, null, [[15, 27]]);
       }));
       function getList(_x) {
         return _getList.apply(this, arguments);
