@@ -140,13 +140,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
         let status: any = { status: { _neq: "archived" } };
         //Assign copy of fields
-        
+
         let fields: any = meta?.fields ? [...meta.fields] : ["*"];
 
         //Delete fields from meta
         delete meta?.fields;
 
-        if (meta?.archived === true) {
+        if (meta?.archived === true || meta?.noStatus == true) {
             status = {};
         }
 

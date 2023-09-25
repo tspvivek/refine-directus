@@ -515,7 +515,7 @@ var dataProvider = function dataProvider(directusClient) {
               }; //Assign copy of fields
               fields = meta != null && meta.fields ? [].concat(meta.fields) : ["*"]; //Delete fields from meta
               meta == null || delete meta.fields;
-              if ((meta == null ? void 0 : meta.archived) === true) {
+              if ((meta == null ? void 0 : meta.archived) === true || (meta == null ? void 0 : meta.noStatus) == true) {
                 status = {};
               }
               search = {};
@@ -1233,7 +1233,7 @@ var getValueProps = function getValueProps(valueProps) {
         url: getFileUrl ? getFileUrl(item) : imageUrl + "assets/" + item.id,
         percent: item.percent,
         size: item.filesize,
-        status: 'done',
+        status: "done",
         type: item.type,
         uid: item.id
       };
@@ -1262,43 +1262,49 @@ var useDirectusUpload = function useDirectusUpload(mediaConfigList, directusClie
     setFileList([].concat(fileList, files));
     return true;
   };
-  var customRequest = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-      var file, onError, onSuccess, form, data;
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            file = _ref.file, onError = _ref.onError, onSuccess = _ref.onSuccess;
-            _context.prev = 1;
-            form = new FormData();
-            form.append("file", file);
-            _context.next = 6;
-            return directusClient.request(uploadFiles(form));
-          case 6:
-            data = _context.sent;
-            onSuccess == null ? void 0 : onSuccess({
-              data: data
-            }, new XMLHttpRequest());
-            _context.next = 13;
-            break;
-          case 10:
-            _context.prev = 10;
-            _context.t0 = _context["catch"](1);
-            onError == null ? void 0 : onError(new Error("Upload Error"));
-          case 13:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee, null, [[1, 10]]);
-    }));
-    return function customRequest(_x) {
-      return _ref2.apply(this, arguments);
-    };
-  }();
   var getUploadProps = function getUploadProps(fieldName) {
     var mediaConfig = mediaConfigList.filter(function (config) {
       return config.name === fieldName;
     })[0];
+    var customRequest = /*#__PURE__*/function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
+        var file, onError, onSuccess, form, data;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              file = _ref.file, onError = _ref.onError, onSuccess = _ref.onSuccess;
+              _context.prev = 1;
+              form = new FormData();
+              if (mediaConfig != null && mediaConfig.title) {
+                form.append("title", mediaConfig.title);
+              }
+              if (mediaConfig != null && mediaConfig.folder) {
+                form.append("folder", mediaConfig.folder);
+              }
+              form.append("file", file);
+              _context.next = 8;
+              return directusClient.request(uploadFiles(form));
+            case 8:
+              data = _context.sent;
+              onSuccess == null ? void 0 : onSuccess({
+                data: data
+              }, new XMLHttpRequest());
+              _context.next = 15;
+              break;
+            case 12:
+              _context.prev = 12;
+              _context.t0 = _context["catch"](1);
+              onError == null ? void 0 : onError(new Error("Upload Error"));
+            case 15:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[1, 12]]);
+      }));
+      return function customRequest(_x) {
+        return _ref2.apply(this, arguments);
+      };
+    }();
     return {
       uploadedFileIds: uploadedFileIds,
       beforeUpload: function beforeUpload(_file, files) {

@@ -22,9 +22,17 @@ password: 123456<br />
 url: https://refine.dev/docs/examples/data-provider/directus/
 
 ## Notes
-To enable perform archive instead of delete with [**DeleteButton**](https://refine.dev/docs/ui-frameworks/antd/components/buttons/delete-button/#api-reference) pass metaData={deleteType:'archive'} in DeleteButton
+- To enable perform archive instead of delete with [**DeleteButton**](https://refine.dev/docs/ui-frameworks/antd/components/buttons/delete-button/#api-reference) pass metaData={deleteType:'archive'} in DeleteButton
+
+- To get list of rows from collection without status field pass params noStatus=true in meta.
+
+- To upload file to a specific folder add folder="folder_id" in MediaConfigList
 
 ## Change Log
+#### 1.0.29
+- Updated library version to directus sdk v12.
+- Added support for folders and title in file upload.
+- Added support for collections without status field.
 
 #### 1.0.23
 - Fixed missing total count in list.

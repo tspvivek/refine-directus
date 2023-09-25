@@ -3,12 +3,14 @@ export interface MediaConfig {
     name: string;
     multiple: boolean;
     normalize?: (item: any) => any;
+    title?: string;
+    folder?: string;
 }
 export interface ValuePropsConfig {
     data: any;
     imageUrl: string;
-    getFileUrl?: ((item: any) => any);
-    getFileTitle?: ((item: any) => any);
+    getFileUrl?: (item: any) => any;
+    getFileTitle?: (item: any) => any;
 }
 export declare const getValueProps: (valueProps: ValuePropsConfig) => {
     file: any;
@@ -21,6 +23,6 @@ export declare const useDirectusUpload: (mediaConfigList: MediaConfig[], directu
     beforeUpload: (_file: any, files: any[]) => boolean;
     fileList: any[];
     maxCount: number;
-    customRequest: ({ file, onError, onSuccess, }: any) => Promise<void>;
+    customRequest: ({ file, onError, onSuccess }: any) => Promise<void>;
 };
 export declare const mediaUploadMapper: (params: any, mediaConfigList: MediaConfig[]) => any;
