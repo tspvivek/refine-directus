@@ -7,15 +7,16 @@ export interface MediaConfig {
     name: string;
     multiple: boolean;
     normalize?: (item: any) => any;
-};
+    title?: string;
+    folder?: string;
+}
 
 export interface ValuePropsConfig {
     data: any;
     imageUrl: string;
-    getFileUrl?: ((item: any) => any);
-    getFileTitle?: ((item: any) => any);
-};
-
+    getFileUrl?: (item: any) => any;
+    getFileTitle?: (item: any) => any;
+}
 
 export const getValueProps = (valueProps: ValuePropsConfig) => {
     const { data, imageUrl, getFileUrl, getFileTitle } = valueProps;
@@ -29,25 +30,22 @@ export const getValueProps = (valueProps: ValuePropsConfig) => {
         fileList:
             data.fileList ??
             (Array.isArray(data) ? data : [data]).map((item: any) => {
-
                 const file: any = {
                     name: getFileTitle ? getFileTitle(item) : item.title,
                     url: getFileUrl ? getFileUrl(item) : `${imageUrl}assets/${item.id}`,
                     percent: item.percent,
                     size: item.filesize,
-                    status: 'done',
+                    status: "done",
                     type: item.type,
-                    uid: item.id
+                    uid: item.id,
                 };
 
                 return file;
-
             }),
     };
 
     return files;
 };
-
 
 export const useDirectusUpload = (mediaConfigList: MediaConfig[], directusClient: any) => {
     const [uploadedFileIds] = useState<string[]>([]);
@@ -71,27 +69,26 @@ export const useDirectusUpload = (mediaConfigList: MediaConfig[], directusClient
         return true;
     };
 
-
-    const customRequest = async ({
-        file,
-        onError,
-        onSuccess,
-    }: any) => {
-        try {
-            const form = new FormData();
-            form.append("file", file);
-
-            const data = await directusClient.request(uploadFiles(form));
-            onSuccess?.({ data }, new XMLHttpRequest());
-        } catch (error) {
-            onError?.(new Error("Upload Error"));
-        }
-    };
-
-
     const getUploadProps = (fieldName: string) => {
-
         const mediaConfig = mediaConfigList.filter((config: any) => config.name === fieldName)[0];
+
+        const customRequest = async ({ file, onError, onSuccess }: any) => {
+            try {
+                const form = new FormData();
+                if (mediaConfig?.title) {
+                    form.append("title", mediaConfig.title);
+                }
+                if (mediaConfig?.folder) {
+                    form.append("folder", mediaConfig.folder);
+                }
+                form.append("file", file);
+
+                const data = await directusClient.request(uploadFiles(form));
+                onSuccess?.({ data }, new XMLHttpRequest());
+            } catch (error) {
+                onError?.(new Error("Upload Error"));
+            }
+        };
 
         return {
             uploadedFileIds,
@@ -105,9 +102,7 @@ export const useDirectusUpload = (mediaConfigList: MediaConfig[], directusClient
     return getUploadProps;
 };
 
-
 export const mediaUploadMapper = (params: any, mediaConfigList: MediaConfig[]) => {
-
     for (const item of Object.keys(params)) {
         if (params[item]) {
             const param = params[item].fileList;
@@ -119,8 +114,7 @@ export const mediaUploadMapper = (params: any, mediaConfigList: MediaConfig[]) =
                     if (param[key].response) {
                         if (mediaConfig.normalize) {
                             ids.push(mediaConfig.normalize(param[key].response.data.id));
-                        }
-                        else {
+                        } else {
                             ids.push(param[key].response.data.id);
                         }
                     } else {
@@ -130,8 +124,7 @@ export const mediaUploadMapper = (params: any, mediaConfigList: MediaConfig[]) =
 
                 if (mediaConfig.multiple) {
                     params[item] = ids;
-                }
-                else {
+                } else {
                     params[item] = ids[0] ? ids[0] : null;
                 }
             }
