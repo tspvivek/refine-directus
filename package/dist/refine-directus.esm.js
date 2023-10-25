@@ -966,9 +966,9 @@ var dataProvider = function dataProvider(directusClient) {
               response = _context10.sent;
               return _context10.abrupt("break", 24);
             case 24:
-              return _context10.abrupt("return", _extends({}, response, {
-                data: response.data
-              }));
+              return _context10.abrupt("return", {
+                data: response
+              });
             case 25:
             case "end":
               return _context10.stop();

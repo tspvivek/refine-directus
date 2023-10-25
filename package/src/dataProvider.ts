@@ -434,8 +434,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
 
         return {
-            ...response,
-            data: response.data,
+            data: response,
         };
     },
 });
