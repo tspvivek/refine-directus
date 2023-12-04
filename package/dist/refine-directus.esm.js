@@ -557,7 +557,7 @@ var dataProvider = function dataProvider(directusClient) {
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
-                total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$.id) != null ? _total$0$countDistinc : 0
+                total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$[aggregateField]) != null ? _total$0$countDistinc : 0
               });
             case 27:
               _context.prev = 27;
@@ -577,51 +577,52 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getMany: function () {
       var _getMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(_ref2) {
-        var resource, ids, meta, fields, params, _total$0$countDistinc2, _total$2, response, total;
+        var _filter;
+        var resource, ids, meta, fields, aggregateField, params, _total$0$countDistinc2, _total$2, response, total;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               resource = _ref2.resource, ids = _ref2.ids, meta = _ref2.meta;
-              fields = meta != null && meta.fields ? [].concat(meta.fields) : ["*"]; //Delete fields from meta
+              fields = meta != null && meta.fields ? [].concat(meta.fields) : ["*"];
+              aggregateField = meta != null && meta.aggregateField ? meta.aggregateField : "id"; //Delete fields from meta
               meta == null || delete meta.fields;
+              meta == null || delete meta.aggregateField;
               params = _extends({
-                filter: {
-                  id: {
-                    _in: ids
-                  }
-                }
+                filter: (_filter = {}, _filter[aggregateField] = {
+                  _in: ids
+                }, _filter)
               }, meta);
-              _context2.prev = 4;
-              _context2.next = 7;
+              _context2.prev = 6;
+              _context2.next = 9;
               return directusClient.request(readItems(resource, _extends({}, params, {
                 fields: fields
               })));
-            case 7:
+            case 9:
               response = _context2.sent;
               delete params["page"];
-              _context2.next = 11;
+              _context2.next = 13;
               return directusClient.request(aggregate(resource, {
                 query: params,
                 aggregate: {
-                  countDistinct: "id"
+                  countDistinct: aggregateField
                 }
               }));
-            case 11:
+            case 13:
               total = _context2.sent;
               return _context2.abrupt("return", {
                 data: response,
-                total: (_total$0$countDistinc2 = (_total$2 = total[0]) == null || (_total$2 = _total$2.countDistinct) == null ? void 0 : _total$2.id) != null ? _total$0$countDistinc2 : 0
+                total: (_total$0$countDistinc2 = (_total$2 = total[0]) == null || (_total$2 = _total$2.countDistinct) == null ? void 0 : _total$2[aggregateField]) != null ? _total$0$countDistinc2 : 0
               });
-            case 15:
-              _context2.prev = 15;
-              _context2.t0 = _context2["catch"](4);
+            case 17:
+              _context2.prev = 17;
+              _context2.t0 = _context2["catch"](6);
               console.log(_context2.t0);
               throw new Error(_context2.t0.errors && _context2.t0.errors[0] && _context2.t0.errors[0].message);
-            case 19:
+            case 21:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[4, 15]]);
+        }, _callee2, null, [[6, 17]]);
       }));
       function getMany(_x2) {
         return _getMany.apply(this, arguments);
@@ -1125,25 +1126,28 @@ var liveProvider = function liveProvider(directusClient, options) {
 var AuthHelper = function AuthHelper(directusClient) {
   return {
     login: function () {
-      var _login = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(identifier, password) {
+      var _login = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(identifier, password, mode) {
         var response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
+              if (mode === void 0) {
+                mode = "json";
+              }
+              _context.next = 3;
               return directusClient.login(identifier, password, {
-                mode: "json"
+                mode: mode
               });
-            case 2:
+            case 3:
               response = _context.sent;
               return _context.abrupt("return", response);
-            case 4:
+            case 5:
             case "end":
               return _context.stop();
           }
         }, _callee);
       }));
-      function login(_x, _x2) {
+      function login(_x, _x2, _x3) {
         return _login.apply(this, arguments);
       }
       return login;
@@ -1165,7 +1169,7 @@ var AuthHelper = function AuthHelper(directusClient) {
           }
         }, _callee2);
       }));
-      function me(_x3) {
+      function me(_x4) {
         return _me.apply(this, arguments);
       }
       return me;
@@ -1183,7 +1187,7 @@ var AuthHelper = function AuthHelper(directusClient) {
           }
         }, _callee3);
       }));
-      function setToken(_x4) {
+      function setToken(_x5) {
         return _setToken.apply(this, arguments);
       }
       return setToken;

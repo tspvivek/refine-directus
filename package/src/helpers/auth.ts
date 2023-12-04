@@ -2,10 +2,9 @@
 import { authentication, createDirectus, readMe, rest, staticToken } from "@directus/sdk";
 
 export const AuthHelper = (directusClient: any) => {
-
     return {
-        login: async (identifier: string, password: string) => {
-            let response = await directusClient.login(identifier, password, { mode: "json" });
+        login: async (identifier: string, password: string, mode: string = "json") => {
+            let response = await directusClient.login(identifier, password, { mode });
 
             return response;
         },
