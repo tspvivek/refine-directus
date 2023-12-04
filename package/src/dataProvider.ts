@@ -204,13 +204,15 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
     getMany: async ({ resource, ids, meta }) => {
         let fields: any = meta?.fields ? [...meta.fields] : ["*"];
+        let aggregateField = meta?.aggregateField ? meta.aggregateField : "id";
 
         //Delete fields from meta
         delete meta?.fields;
+        delete meta?.aggregateField;
 
         let params: any = {
             filter: {
-                id: { _in: ids },
+                [aggregateField]: { _in: ids },
             },
             ...meta,
         };
@@ -224,14 +226,14 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                 aggregate(resource, {
                     query: params,
                     aggregate: {
-                        countDistinct: "id",
+                        countDistinct: aggregateField,
                     },
                 })
             );
 
             return {
                 data: response,
-                total: total[0]?.countDistinct?.id ?? 0,
+                total: total[0]?.countDistinct?.[aggregateField] ?? 0,
             };
         } catch (e) {
             console.log(e);
