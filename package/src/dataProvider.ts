@@ -194,7 +194,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
             return {
                 data: response,
-                total: total[0]?.countDistinct?.id ?? 0,
+                total: total[0]?.countDistinct?.[aggregateField] ?? 0,
             };
         } catch (e) {
             console.log(e);
