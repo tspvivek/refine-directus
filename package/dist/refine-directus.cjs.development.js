@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var sdk = require('@directus/sdk');
+var SDK = require('@directus/sdk');
 var react = require('react');
 
 function _asyncIterator(iterable) {
@@ -498,11 +498,37 @@ var generateConditionalFilter = function generateConditionalFilter(item) {
   });
   return conditionalFilters;
 };
+//Function to return SDK function based on resource and type
+var getSDKFunction = function getSDKFunction(resource, type, singular) {
+  if (singular === void 0) {
+    singular = false;
+  }
+  //If resource is directus_users then function is readUsers, createUsers, etc.
+  //If resource is directus_files then function is readFiles, createFiles, etc.
+  //If resource is directus_roles then function is readRoles, createRoles, etc.
+  //if resource has directus_ then remove it
+  var functionName = null;
+  if (resource.includes("directus_")) {
+    resource = resource.replace("directus_", "");
+  } else {
+    return null;
+  }
+  if (singular) {
+    functionName = "" + type + (resource.charAt(0).toUpperCase() + resource.slice(1));
+    //Remove s from end of function name
+    functionName = functionName.slice(0, -1);
+  } else {
+    functionName = "" + type + (resource.charAt(0).toUpperCase() + resource.slice(1));
+  }
+  //Get SDK function
+  var sdkFunction = SDK[functionName];
+  return sdkFunction;
+};
 var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _total$0$countDistinc, _total$, response, aggregateField, total;
+        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _total$0$countDistinc, _total$, sdkFunction, response, aggregateField, total;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -541,37 +567,40 @@ var dataProvider = function dataProvider(directusClient) {
                 params["sort"] = sortString;
               }
               _context.prev = 15;
-              _context.next = 18;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
+              sdkFunction = getSDKFunction(resource, "read", false);
+              _context.next = 19;
+              return directusClient.request(sdkFunction ? sdkFunction(_extends({}, params, {
+                fields: fields
+              })) : SDK.readItems(resource, _extends({}, params, {
                 fields: fields
               })));
-            case 18:
+            case 19:
               response = _context.sent;
               delete params["page"];
               aggregateField = meta != null && meta.aggregateField ? meta.aggregateField : "id";
-              _context.next = 23;
-              return directusClient.request(sdk.aggregate(resource, {
+              _context.next = 24;
+              return directusClient.request(SDK.aggregate(resource, {
                 query: params,
                 aggregate: {
                   countDistinct: aggregateField
                 }
               }));
-            case 23:
+            case 24:
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$[aggregateField]) != null ? _total$0$countDistinc : 0
               });
-            case 27:
-              _context.prev = 27;
+            case 28:
+              _context.prev = 28;
               _context.t0 = _context["catch"](15);
               console.log(_context.t0);
               throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
-            case 31:
+            case 32:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[15, 27]]);
+        }, _callee, null, [[15, 28]]);
       }));
       function getList(_x) {
         return _getList.apply(this, arguments);
@@ -581,7 +610,7 @@ var dataProvider = function dataProvider(directusClient) {
     getMany: function () {
       var _getMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(_ref2) {
         var _filter;
-        var resource, ids, meta, fields, aggregateField, params, _total$0$countDistinc2, _total$2, response, total;
+        var resource, ids, meta, fields, aggregateField, params, _total$0$countDistinc2, _total$2, sdkFunction, response, total;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
@@ -596,36 +625,39 @@ var dataProvider = function dataProvider(directusClient) {
                 }, _filter)
               }, meta);
               _context2.prev = 6;
-              _context2.next = 9;
-              return directusClient.request(sdk.readItems(resource, _extends({}, params, {
+              sdkFunction = getSDKFunction(resource, "read", false);
+              _context2.next = 10;
+              return directusClient.request(sdkFunction ? sdkFunction(_extends({}, params, {
+                fields: fields
+              })) : SDK.readItems(resource, _extends({}, params, {
                 fields: fields
               })));
-            case 9:
+            case 10:
               response = _context2.sent;
               delete params["page"];
-              _context2.next = 13;
-              return directusClient.request(sdk.aggregate(resource, {
+              _context2.next = 14;
+              return directusClient.request(SDK.aggregate(resource, {
                 query: params,
                 aggregate: {
                   countDistinct: aggregateField
                 }
               }));
-            case 13:
+            case 14:
               total = _context2.sent;
               return _context2.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc2 = (_total$2 = total[0]) == null || (_total$2 = _total$2.countDistinct) == null ? void 0 : _total$2[aggregateField]) != null ? _total$0$countDistinc2 : 0
               });
-            case 17:
-              _context2.prev = 17;
+            case 18:
+              _context2.prev = 18;
               _context2.t0 = _context2["catch"](6);
               console.log(_context2.t0);
               throw new Error(_context2.t0.errors && _context2.t0.errors[0] && _context2.t0.errors[0].message);
-            case 21:
+            case 22:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[6, 17]]);
+        }, _callee2, null, [[6, 18]]);
       }));
       function getMany(_x2) {
         return _getMany.apply(this, arguments);
@@ -634,30 +666,31 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     create: function () {
       var _create = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(_ref3) {
-        var resource, variables, meta, params, response;
+        var resource, variables, meta, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               resource = _ref3.resource, variables = _ref3.variables, meta = _ref3.meta;
               params = _extends({}, variables, meta);
               _context3.prev = 2;
-              _context3.next = 5;
-              return directusClient.request(sdk.createItem(resource, params));
-            case 5:
+              sdkFunction = getSDKFunction(resource, "create", true);
+              _context3.next = 6;
+              return directusClient.request(sdkFunction ? sdkFunction(params) : SDK.createItem(resource, params));
+            case 6:
               response = _context3.sent;
               return _context3.abrupt("return", {
                 data: response
               });
-            case 9:
-              _context3.prev = 9;
+            case 10:
+              _context3.prev = 10;
               _context3.t0 = _context3["catch"](2);
               console.log(_context3.t0);
               throw new Error(_context3.t0.errors && _context3.t0.errors[0] && _context3.t0.errors[0].message);
-            case 13:
+            case 14:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[2, 9]]);
+        }, _callee3, null, [[2, 10]]);
       }));
       function create(_x3) {
         return _create.apply(this, arguments);
@@ -666,30 +699,31 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     update: function () {
       var _update = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(_ref4) {
-        var resource, id, variables, meta, params, response;
+        var resource, id, variables, meta, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               resource = _ref4.resource, id = _ref4.id, variables = _ref4.variables, meta = _ref4.meta;
               params = _extends({}, variables, meta);
               _context4.prev = 2;
-              _context4.next = 5;
-              return directusClient.request(sdk.updateItem(resource, id, params));
-            case 5:
+              sdkFunction = getSDKFunction(resource, "update", true);
+              _context4.next = 6;
+              return directusClient.request(sdkFunction ? sdkFunction(id, params) : SDK.updateItem(resource, id, params));
+            case 6:
               response = _context4.sent;
               return _context4.abrupt("return", {
                 data: response
               });
-            case 9:
-              _context4.prev = 9;
+            case 10:
+              _context4.prev = 10;
               _context4.t0 = _context4["catch"](2);
               console.log(_context4.t0);
               throw new Error(_context4.t0.errors && _context4.t0.errors[0] && _context4.t0.errors[0].message);
-            case 13:
+            case 14:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[2, 9]]);
+        }, _callee4, null, [[2, 10]]);
       }));
       function update(_x4) {
         return _update.apply(this, arguments);
@@ -698,7 +732,7 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     updateMany: function () {
       var _updateMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(_ref5) {
-        var resource, ids, variables, meta, idsFormatted, params, response;
+        var resource, ids, variables, meta, idsFormatted, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -706,23 +740,24 @@ var dataProvider = function dataProvider(directusClient) {
               idsFormatted = ids;
               params = _extends({}, variables, meta);
               _context5.prev = 3;
-              _context5.next = 6;
-              return directusClient.request(sdk.updateItems(resource, idsFormatted, params));
-            case 6:
+              sdkFunction = getSDKFunction(resource, "update", false);
+              _context5.next = 7;
+              return directusClient.request(sdkFunction ? sdkFunction(idsFormatted, params) : SDK.updateItems(resource, idsFormatted, params));
+            case 7:
               response = _context5.sent;
               return _context5.abrupt("return", {
                 data: response
               });
-            case 10:
-              _context5.prev = 10;
+            case 11:
+              _context5.prev = 11;
               _context5.t0 = _context5["catch"](3);
               console.log(_context5.t0);
               throw new Error(_context5.t0.errors && _context5.t0.errors[0] && _context5.t0.errors[0].message);
-            case 14:
+            case 15:
             case "end":
               return _context5.stop();
           }
-        }, _callee5, null, [[3, 10]]);
+        }, _callee5, null, [[3, 11]]);
       }));
       function updateMany(_x5) {
         return _updateMany.apply(this, arguments);
@@ -731,30 +766,31 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     createMany: function () {
       var _createMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(_ref6) {
-        var resource, variables, meta, params, response;
+        var resource, variables, meta, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) switch (_context6.prev = _context6.next) {
             case 0:
               resource = _ref6.resource, variables = _ref6.variables, meta = _ref6.meta;
               params = _extends({}, variables, meta);
               _context6.prev = 2;
-              _context6.next = 5;
-              return directusClient.request(sdk.createItems(resource, params));
-            case 5:
+              sdkFunction = getSDKFunction(resource, "create", false);
+              _context6.next = 6;
+              return directusClient.request(sdkFunction ? sdkFunction(params) : SDK.createItems(resource, params));
+            case 6:
               response = _context6.sent;
               return _context6.abrupt("return", {
                 data: response
               });
-            case 9:
-              _context6.prev = 9;
+            case 10:
+              _context6.prev = 10;
               _context6.t0 = _context6["catch"](2);
               console.log(_context6.t0);
               throw new Error(_context6.t0.errors && _context6.t0.errors[0] && _context6.t0.errors[0].message);
-            case 13:
+            case 14:
             case "end":
               return _context6.stop();
           }
-        }, _callee6, null, [[2, 9]]);
+        }, _callee6, null, [[2, 10]]);
       }));
       function createMany(_x6) {
         return _createMany.apply(this, arguments);
@@ -763,30 +799,31 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     getOne: function () {
       var _getOne = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(_ref7) {
-        var resource, id, meta, params, response;
+        var resource, id, meta, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) switch (_context7.prev = _context7.next) {
             case 0:
               resource = _ref7.resource, id = _ref7.id, meta = _ref7.meta;
               params = _extends({}, meta);
               _context7.prev = 2;
-              _context7.next = 5;
-              return directusClient.request(sdk.readItem(resource, id, params));
-            case 5:
+              sdkFunction = getSDKFunction(resource, "read", true);
+              _context7.next = 6;
+              return directusClient.request(sdkFunction ? sdkFunction(id, params) : SDK.readItem(resource, id, params));
+            case 6:
               response = _context7.sent;
               return _context7.abrupt("return", {
                 data: response
               });
-            case 9:
-              _context7.prev = 9;
+            case 10:
+              _context7.prev = 10;
               _context7.t0 = _context7["catch"](2);
               console.log(_context7.t0);
               throw new Error(_context7.t0.errors && _context7.t0.errors[0] && _context7.t0.errors[0].message);
-            case 13:
+            case 14:
             case "end":
               return _context7.stop();
           }
-        }, _callee7, null, [[2, 9]]);
+        }, _callee7, null, [[2, 10]]);
       }));
       function getOne(_x7) {
         return _getOne.apply(this, arguments);
@@ -795,47 +832,49 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteOne: function () {
       var _deleteOne = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(_ref8) {
-        var resource, id, meta, params, response, _response;
+        var resource, id, meta, params, sdkFunction, response, _sdkFunction, _response;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) switch (_context8.prev = _context8.next) {
             case 0:
               resource = _ref8.resource, id = _ref8.id, meta = _ref8.meta;
               _context8.prev = 1;
               if (!(meta && meta.deleteType === "archive")) {
-                _context8.next = 10;
+                _context8.next = 11;
                 break;
               }
               params = _extends({
                 status: "archived"
               }, meta);
-              _context8.next = 6;
-              return directusClient.request(sdk.updateItem(resource, id, params));
-            case 6:
+              sdkFunction = getSDKFunction(resource, "update", true);
+              _context8.next = 7;
+              return directusClient.request(sdkFunction ? sdkFunction(id, params) : SDK.updateItem(resource, id, params));
+            case 7:
               response = _context8.sent;
               return _context8.abrupt("return", {
                 data: response
               });
-            case 10:
-              _context8.next = 12;
-              return directusClient.request(sdk.deleteItem(resource, id));
-            case 12:
+            case 11:
+              _sdkFunction = getSDKFunction(resource, "delete", true);
+              _context8.next = 14;
+              return directusClient.request(_sdkFunction ? _sdkFunction(id) : SDK.deleteItem(resource, id));
+            case 14:
               _response = _context8.sent;
               return _context8.abrupt("return", {
                 data: _response
               });
-            case 14:
-              _context8.next = 20;
-              break;
             case 16:
-              _context8.prev = 16;
+              _context8.next = 22;
+              break;
+            case 18:
+              _context8.prev = 18;
               _context8.t0 = _context8["catch"](1);
               console.log(_context8.t0);
               throw new Error(_context8.t0.errors && _context8.t0.errors[0] && _context8.t0.errors[0].message);
-            case 20:
+            case 22:
             case "end":
               return _context8.stop();
           }
-        }, _callee8, null, [[1, 16]]);
+        }, _callee8, null, [[1, 18]]);
       }));
       function deleteOne(_x8) {
         return _deleteOne.apply(this, arguments);
@@ -844,7 +883,7 @@ var dataProvider = function dataProvider(directusClient) {
     }(),
     deleteMany: function () {
       var _deleteMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(_ref9) {
-        var resource, ids, meta, idsFormatted, params, response, _response2;
+        var resource, ids, meta, idsFormatted, params, sdkFunction, response, _sdkFunction2, _response2;
         return _regeneratorRuntime().wrap(function _callee9$(_context9) {
           while (1) switch (_context9.prev = _context9.next) {
             case 0:
@@ -852,40 +891,42 @@ var dataProvider = function dataProvider(directusClient) {
               _context9.prev = 1;
               idsFormatted = ids;
               if (!(meta && meta.deleteType === "archive")) {
-                _context9.next = 11;
+                _context9.next = 12;
                 break;
               }
               params = _extends({
                 status: "archived"
               }, meta);
-              _context9.next = 7;
-              return directusClient.request(sdk.updateItems(resource, idsFormatted, params));
-            case 7:
+              sdkFunction = getSDKFunction(resource, "update", false);
+              _context9.next = 8;
+              return directusClient.request(sdkFunction ? sdkFunction(idsFormatted, params) : SDK.updateItems(resource, idsFormatted, params));
+            case 8:
               response = _context9.sent;
               return _context9.abrupt("return", {
                 data: response
               });
-            case 11:
-              _context9.next = 13;
-              return directusClient.request(sdk.deleteItems(resource, idsFormatted));
-            case 13:
+            case 12:
+              _sdkFunction2 = getSDKFunction(resource, "delete", false);
+              _context9.next = 15;
+              return directusClient.request(_sdkFunction2 ? _sdkFunction2(idsFormatted) : SDK.deleteItems(resource, idsFormatted));
+            case 15:
               _response2 = _context9.sent;
               return _context9.abrupt("return", {
                 data: _response2.data
               });
-            case 15:
-              _context9.next = 21;
-              break;
             case 17:
-              _context9.prev = 17;
+              _context9.next = 23;
+              break;
+            case 19:
+              _context9.prev = 19;
               _context9.t0 = _context9["catch"](1);
               console.log(_context9.t0);
               throw new Error(_context9.t0.errors && _context9.t0.errors[0] && _context9.t0.errors[0].message);
-            case 21:
+            case 23:
             case "end":
               return _context9.stop();
           }
-        }, _callee9, null, [[1, 17]]);
+        }, _callee9, null, [[1, 19]]);
       }));
       function deleteMany(_x9) {
         return _deleteMany.apply(this, arguments);
@@ -1162,7 +1203,7 @@ var AuthHelper = function AuthHelper(directusClient) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return directusClient.request(sdk.readMe(metaData));
+              return directusClient.request(SDK.readMe(metaData));
             case 2:
               me = _context2.sent;
               return _context2.abrupt("return", me);
@@ -1183,7 +1224,7 @@ var AuthHelper = function AuthHelper(directusClient) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _context3.next = 2;
-              return directusClient["with"](sdk.staticToken(token));
+              return directusClient["with"](SDK.staticToken(token));
             case 2:
             case "end":
               return _context3.stop();
@@ -1290,7 +1331,7 @@ var useDirectusUpload = function useDirectusUpload(mediaConfigList, directusClie
               }
               form.append("file", file);
               _context.next = 8;
-              return directusClient.request(sdk.uploadFiles(form));
+              return directusClient.request(SDK.uploadFiles(form));
             case 8:
               data = _context.sent;
               onSuccess == null ? void 0 : onSuccess({
@@ -1361,11 +1402,11 @@ var mediaUploadMapper = function mediaUploadMapper(params, mediaConfigList) {
   return params;
 };
 
-Object.keys(sdk).forEach(function (k) {
+Object.keys(SDK).forEach(function (k) {
   if (k !== 'default') Object.defineProperty(exports, k, {
     enumerable: true,
     get: function () {
-      return sdk[k];
+      return SDK[k];
     }
   });
 });

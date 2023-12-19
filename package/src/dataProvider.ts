@@ -1,16 +1,5 @@
 // @ts-nocheck
-import {
-    aggregate,
-    createItem,
-    createItems,
-    deleteItem,
-    deleteItems,
-    readItem,
-    readItems,
-    updateItem,
-    updateItems,
-} from "@directus/sdk";
-import { al } from "@directus/sdk/dist/index-c9cd424a";
+import * as SDK from "@directus/sdk";
 import { ConditionalFilter, CrudFilters, CrudSorting, DataProvider, LogicalFilter } from "@refinedev/core";
 
 const operators = {
@@ -130,6 +119,36 @@ const generateConditionalFilter = (item?: ConditionalFilter) => {
     return conditionalFilters;
 };
 
+//Function to return SDK function based on resource and type
+const getSDKFunction = (resource: string, type: string, singular: boolean = false) => {
+    //If resource is directus_users then function is readUsers, createUsers, etc.
+    //If resource is directus_files then function is readFiles, createFiles, etc.
+    //If resource is directus_roles then function is readRoles, createRoles, etc.
+
+    //if resource has directus_ then remove it
+
+    let functionName = null;
+
+    if (resource.includes("directus_")) {
+        resource = resource.replace("directus_", "");
+    } else {
+        return null;
+    }
+
+    if (singular) {
+        functionName = `${type}${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
+        //Remove s from end of function name
+        functionName = functionName.slice(0, -1);
+    } else {
+        functionName = `${type}${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
+    }
+
+        //Get SDK function
+    const sdkFunction = SDK[functionName];
+
+    return sdkFunction as Function;
+};
+
 export const dataProvider = (directusClient: any): DataProvider => ({
     getList: async ({ resource, pagination, filters, sorters, meta }) => {
         const current = pagination?.current || 1;
@@ -139,8 +158,8 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         const paramsFilters = generateFilter(filters);
 
         let status: any = { status: { _neq: "archived" } };
-        //Assign copy of fields
 
+        //Assign copy of fields
         let fields: any = meta?.fields ? [...meta.fields] : ["*"];
 
         //Delete fields from meta
@@ -177,14 +196,18 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         }
 
         try {
-            const response: any = await directusClient.request(readItems(resource, { ...params, fields }));
+            const sdkFunction = getSDKFunction(resource, "read", false);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction({ ...params, fields }) : SDK.readItems(resource, { ...params, fields })
+            );
 
             delete params["page"];
 
             const aggregateField = meta?.aggregateField ? meta.aggregateField : "id";
 
             const total = await directusClient.request(
-                aggregate(resource, {
+                SDK.aggregate(resource, {
                     query: params,
                     aggregate: {
                         countDistinct: aggregateField,
@@ -218,12 +241,16 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(readItems(resource, { ...params, fields }));
+            const sdkFunction = getSDKFunction(resource, "read", false);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction({ ...params, fields }) : SDK.readItems(resource, { ...params, fields })
+            );
 
             delete params["page"];
 
             const total = await directusClient.request(
-                aggregate(resource, {
+                SDK.aggregate(resource, {
                     query: params,
                     aggregate: {
                         countDistinct: aggregateField,
@@ -248,7 +275,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(createItem(resource, params));
+            const sdkFunction = getSDKFunction(resource, "create", true);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction(params) : SDK.createItem(resource, params)
+            );
 
             return {
                 data: response,
@@ -266,7 +297,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(updateItem(resource, id, params));
+            const sdkFunction = getSDKFunction(resource, "update", true);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction(id, params) : SDK.updateItem(resource, id, params)
+            );
 
             return {
                 data: response,
@@ -286,7 +321,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(updateItems(resource, idsFormatted, params));
+            const sdkFunction = getSDKFunction(resource, "update", false);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction(idsFormatted, params) : SDK.updateItems(resource, idsFormatted, params)
+            );
 
             return {
                 data: response,
@@ -304,7 +343,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(createItems(resource, params));
+            const sdkFunction = getSDKFunction(resource, "create", false);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction(params) : SDK.createItems(resource, params)
+            );
 
             return {
                 data: response,
@@ -321,7 +364,11 @@ export const dataProvider = (directusClient: any): DataProvider => ({
         };
 
         try {
-            const response: any = await directusClient.request(readItem(resource, id, params));
+            const sdkFunction = getSDKFunction(resource, "read", true);
+
+            const response: any = await directusClient.request(
+                sdkFunction ? sdkFunction(id, params) : SDK.readItem(resource, id, params)
+            );
 
             return {
                 data: response,
@@ -340,13 +387,21 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                     ...meta,
                 };
 
-                const response: any = await directusClient.request(updateItem(resource, id, params));
+                const sdkFunction = getSDKFunction(resource, "update", true);
+
+                const response: any = await directusClient.request(
+                    sdkFunction ? sdkFunction(id, params) : SDK.updateItem(resource, id, params)
+                );
 
                 return {
                     data: response,
                 };
             } else {
-                const response: any = await directusClient.request(deleteItem(resource, id));
+                const sdkFunction = getSDKFunction(resource, "delete", true);
+
+                const response: any = await directusClient.request(
+                    sdkFunction ? sdkFunction(id) : SDK.deleteItem(resource, id)
+                );
 
                 return {
                     data: response,
@@ -368,13 +423,21 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                     ...meta,
                 };
 
-                const response: any = await directusClient.request(updateItems(resource, idsFormatted, params));
+                const sdkFunction = getSDKFunction(resource, "update", false);
+
+                const response: any = await directusClient.request(
+                    sdkFunction ? sdkFunction(idsFormatted, params) : SDK.updateItems(resource, idsFormatted, params)
+                );
 
                 return {
                     data: response,
                 };
             } else {
-                const response: any = await directusClient.request(deleteItems(resource, idsFormatted));
+                const sdkFunction = getSDKFunction(resource, "delete", false);
+
+                const response: any = await directusClient.request(
+                    sdkFunction ? sdkFunction(idsFormatted) : SDK.deleteItems(resource, idsFormatted)
+                );
 
                 return {
                     data: response.data,
