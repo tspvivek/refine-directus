@@ -1,4 +1,3 @@
-import { aS, as, c, co, o } from "@directus/sdk/dist/index-c9cd424a";
 import { LiveProvider } from "@refinedev/core";
 
 const eventsMap: any = {
