@@ -415,7 +415,7 @@ var operators = {
   nendswiths: "_niends_with",
   or: "_or",
   and: "_and",
-  instersects: "_intersects",
+  intersects: "_intersects",
   nintersects: "_nintersects",
   intersectsbbox: "_intersects_bbox",
   nintersectsbbox: "_nintersects_bbox"
