@@ -20,15 +20,19 @@ const operators = {
     between: "_between",
     nbetween: "_nbetween",
     startswith: "_starts_with",
-    startswiths: undefined,
+    startswiths: "_istarts_with",
     nstartswith: "_nstarts_with",
-    nstartswiths: undefined,
+    nstartswiths: "_nistarts_with",
     endswith: "_ends_with",
-    endswiths: undefined,
+    endswiths: "_iends_with",
     nendswith: "_nends_with",
-    nendswiths: undefined,
+    nendswiths: "_niends_with",
     or: "_or",
     and: "_and",
+    instersects: "_intersects",
+    nintersects: "_nintersects",
+    intersectsbbox: "_intersects_bbox",
+    nintersectsbbox: "_nintersects_bbox",
 };
 
 const strToObj = (str: string, val: any) => {
@@ -143,7 +147,7 @@ const getSDKFunction = (resource: string, type: string, singular: boolean = fals
         functionName = `${type}${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
     }
 
-        //Get SDK function
+    //Get SDK function
     const sdkFunction = SDK[functionName];
 
     return sdkFunction as Function;
@@ -202,6 +206,13 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                 sdkFunction ? sdkFunction({ ...params, fields }) : SDK.readItems(resource, { ...params, fields })
             );
 
+            if (pageSize == -1 || pagination?.mode == "off") {
+                return {
+                    data: response,
+                    total: response.length,
+                };
+            }
+
             delete params["page"];
 
             const aggregateField = meta?.aggregateField ? meta.aggregateField : "id";
@@ -247,20 +258,9 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                 sdkFunction ? sdkFunction({ ...params, fields }) : SDK.readItems(resource, { ...params, fields })
             );
 
-            delete params["page"];
-
-            const total = await directusClient.request(
-                SDK.aggregate(resource, {
-                    query: params,
-                    aggregate: {
-                        countDistinct: aggregateField,
-                    },
-                })
-            );
-
             return {
                 data: response,
-                total: total[0]?.countDistinct?.[aggregateField] ?? 0,
+                total: response.length,
             };
         } catch (e) {
             console.log(e);

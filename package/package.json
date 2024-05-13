@@ -1,7 +1,7 @@
 {
     "name": "@tspvivek/refine-directus",
     "description": "Refine Directus REST data provider. This is a wrapper around the Directus SDK to use in refine.",
-    "version": "1.0.34",
+    "version": "1.0.36",
     "license": "MIT",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
@@ -45,7 +45,7 @@
         "tslib": "^2.3.1"
     },
     "dependencies": {
-        "@directus/sdk": "^13.0.2",
+        "@directus/sdk": "^16.0.0",
         "@refinedev/core": "^4.46.0",
         "@types/react": "^18.2.20"
     },

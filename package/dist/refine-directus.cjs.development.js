@@ -408,15 +408,19 @@ var operators = {
   between: "_between",
   nbetween: "_nbetween",
   startswith: "_starts_with",
-  startswiths: undefined,
+  startswiths: "_istarts_with",
   nstartswith: "_nstarts_with",
-  nstartswiths: undefined,
+  nstartswiths: "_nistarts_with",
   endswith: "_ends_with",
-  endswiths: undefined,
+  endswiths: "_iends_with",
   nendswith: "_nends_with",
-  nendswiths: undefined,
+  nendswiths: "_niends_with",
   or: "_or",
-  and: "_and"
+  and: "_and",
+  instersects: "_intersects",
+  nintersects: "_nintersects",
+  intersectsbbox: "_intersects_bbox",
+  nintersectsbbox: "_nintersects_bbox"
 };
 var strToObj = function strToObj(str, val) {
   var i,
@@ -576,31 +580,40 @@ var dataProvider = function dataProvider(directusClient) {
               })));
             case 19:
               response = _context.sent;
+              if (!(pageSize == -1 || (pagination == null ? void 0 : pagination.mode) == "off")) {
+                _context.next = 22;
+                break;
+              }
+              return _context.abrupt("return", {
+                data: response,
+                total: response.length
+              });
+            case 22:
               delete params["page"];
               aggregateField = meta != null && meta.aggregateField ? meta.aggregateField : "id";
-              _context.next = 24;
+              _context.next = 26;
               return directusClient.request(SDK.aggregate(resource, {
                 query: params,
                 aggregate: {
                   countDistinct: aggregateField
                 }
               }));
-            case 24:
+            case 26:
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
                 total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$[aggregateField]) != null ? _total$0$countDistinc : 0
               });
-            case 28:
-              _context.prev = 28;
+            case 30:
+              _context.prev = 30;
               _context.t0 = _context["catch"](15);
               console.log(_context.t0);
               throw new Error(_context.t0.errors && _context.t0.errors[0] && _context.t0.errors[0].message);
-            case 32:
+            case 34:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[15, 28]]);
+        }, _callee, null, [[15, 30]]);
       }));
       function getList(_x) {
         return _getList.apply(this, arguments);
@@ -610,7 +623,7 @@ var dataProvider = function dataProvider(directusClient) {
     getMany: function () {
       var _getMany = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(_ref2) {
         var _filter;
-        var resource, ids, meta, fields, aggregateField, params, _total$0$countDistinc2, _total$2, sdkFunction, response, total;
+        var resource, ids, meta, fields, aggregateField, params, sdkFunction, response;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
@@ -634,30 +647,20 @@ var dataProvider = function dataProvider(directusClient) {
               })));
             case 10:
               response = _context2.sent;
-              delete params["page"];
-              _context2.next = 14;
-              return directusClient.request(SDK.aggregate(resource, {
-                query: params,
-                aggregate: {
-                  countDistinct: aggregateField
-                }
-              }));
-            case 14:
-              total = _context2.sent;
               return _context2.abrupt("return", {
                 data: response,
-                total: (_total$0$countDistinc2 = (_total$2 = total[0]) == null || (_total$2 = _total$2.countDistinct) == null ? void 0 : _total$2[aggregateField]) != null ? _total$0$countDistinc2 : 0
+                total: response.length
               });
-            case 18:
-              _context2.prev = 18;
+            case 14:
+              _context2.prev = 14;
               _context2.t0 = _context2["catch"](6);
               console.log(_context2.t0);
               throw new Error(_context2.t0.errors && _context2.t0.errors[0] && _context2.t0.errors[0].message);
-            case 22:
+            case 18:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[6, 18]]);
+        }, _callee2, null, [[6, 14]]);
       }));
       function getMany(_x2) {
         return _getMany.apply(this, arguments);
