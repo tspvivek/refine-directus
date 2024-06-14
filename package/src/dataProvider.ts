@@ -1,6 +1,7 @@
 // @ts-nocheck
 import * as SDK from "@directus/sdk";
 import { ConditionalFilter, CrudFilters, CrudSorting, DataProvider, LogicalFilter } from "@refinedev/core";
+import pluralize from "pluralize";
 
 const operators = {
     eq: "_eq",
@@ -142,9 +143,10 @@ const getSDKFunction = (resource: string, type: string, singular: boolean = fals
     if (singular) {
         functionName = `${type}${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
         //Remove s from end of function name
-        functionName = functionName.slice(0, -1);
+        functionName = pluralize.singular(functionName);
     } else {
         functionName = `${type}${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
+        functionName = pluralize.plural(functionName);
     }
 
     //Get SDK function
@@ -184,7 +186,6 @@ export const dataProvider = (directusClient: any): DataProvider => ({
                 ...paramsFilters.filters,
                 ...status,
             },
-            meta: "*",
             page: current,
             limit: pageSize,
             ...meta,
@@ -228,7 +229,7 @@ export const dataProvider = (directusClient: any): DataProvider => ({
 
             return {
                 data: response,
-                total: total[0]?.countDistinct?.[aggregateField] ?? 0,
+                total: parseInt(total[0]?.countDistinct?.[aggregateField]) ?? 0,
             };
         } catch (e) {
             console.log(e);

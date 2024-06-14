@@ -1,6 +1,7 @@
 import * as SDK from '@directus/sdk';
 import { aggregate, readItems, createItem, updateItem, updateItems, createItems, readItem, deleteItem, deleteItems, readMe, staticToken, uploadFiles } from '@directus/sdk';
 export * from '@directus/sdk';
+import pluralize from 'pluralize';
 import { useState } from 'react';
 
 function _asyncIterator(iterable) {
@@ -518,9 +519,10 @@ var getSDKFunction = function getSDKFunction(resource, type, singular) {
   if (singular) {
     functionName = "" + type + (resource.charAt(0).toUpperCase() + resource.slice(1));
     //Remove s from end of function name
-    functionName = functionName.slice(0, -1);
+    functionName = pluralize.singular(functionName);
   } else {
     functionName = "" + type + (resource.charAt(0).toUpperCase() + resource.slice(1));
+    functionName = pluralize.plural(functionName);
   }
   //Get SDK function
   var sdkFunction = SDK[functionName];
@@ -530,7 +532,7 @@ var dataProvider = function dataProvider(directusClient) {
   return {
     getList: function () {
       var _getList = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref) {
-        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _total$0$countDistinc, _total$, sdkFunction, response, aggregateField, total;
+        var resource, pagination, filters, sorters, meta, current, pageSize, _sort, paramsFilters, status, fields, search, params, sortString, _parseInt, _total$, sdkFunction, response, aggregateField, total;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -557,7 +559,6 @@ var dataProvider = function dataProvider(directusClient) {
               }
               params = _extends({}, search, {
                 filter: _extends({}, paramsFilters.filters, status),
-                meta: "*",
                 page: current,
                 limit: pageSize
               }, meta);
@@ -600,7 +601,7 @@ var dataProvider = function dataProvider(directusClient) {
               total = _context.sent;
               return _context.abrupt("return", {
                 data: response,
-                total: (_total$0$countDistinc = (_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$[aggregateField]) != null ? _total$0$countDistinc : 0
+                total: (_parseInt = parseInt((_total$ = total[0]) == null || (_total$ = _total$.countDistinct) == null ? void 0 : _total$[aggregateField])) != null ? _parseInt : 0
               });
             case 30:
               _context.prev = 30;
